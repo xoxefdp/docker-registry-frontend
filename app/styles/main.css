@@ -148,3 +148,8 @@ footer img {
 .caret{
   cursor: pointer;
 }
+
+.table-hover th:hover{
+  background-color: #f8fff0;
+  cursor: pointer;
+}
