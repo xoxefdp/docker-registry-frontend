@@ -3,7 +3,7 @@
     <li><a href="repositories/">Repositories</a></li>
     <li ng-show="repositoryUser"><a href="repositories/{{repositoryUser}}">{{repositoryUser}}</a></li>
     <li><a href="repository/{{repository}}">{{repositoryName}}</a></li>
-    <li><a href="tag/{{repository}}/{{tagName}}/{{imageId}}">{{tagName}}</a></li>
+    <li><a href="tag/{{repository}}/{{tagName}}">{{tagName}}</a></li>
 </ol>
 
 <h1>
@@ -11,20 +11,14 @@
   <span ng-show="repositoryUser"><a href="repositories/{{repositoryUser}}">{{repositoryUser}}</a></span> /
   <span ng-show="repositoryUser"><a href="repository/{{repositoryUser}}/{{repositoryName}}">{{repositoryName}}</a></span>
   <span ng-hide="repositoryUser"><a href="repository/{{repositoryName}}">{{repositoryName}}</a></span> :
-  <span ng-show="repositoryUser"><a href="tag/{{repositoryUser}}/{{repositoryName}}/{{tagName}}/{{imageId}}">{{tagName}}</a></span>
-  <span ng-hide="repositoryUser"><a href="tag/{{repositoryName}}/{{tagName}}/{{imageId}}">{{tagName}}</a></span>
+  <span ng-show="repositoryUser"><a href="tag/{{repositoryUser}}/{{repositoryName}}/{{tagName}}">{{tagName}}</a></span>
+  <span ng-hide="repositoryUser"><a href="tag/{{repositoryName}}/{{tagName}}">{{tagName}}</a></span>
 
   <div ng-hide="appMode.browseOnly" class="pull-right">
-    <button type="button" ng-click="selection=['{{repositoryUser}}/{{repositoryName}}:{{tagName}}']; openConfirmTagDeletionDialog()" class="btn btn-danger">
+    <button type="button" ng-click="selection=['{{repository}}:{{tagName}}']; openConfirmTagDeletionDialog()" class="btn btn-danger">
       <span class="glyphicon glyphicon-trash"></span> Delete Tag
     </button>
   </div>
-
-  <!--<div ng-hide="appMode.browseOnly" class="pull-right">
-    <a class="btn btn-danger" href="tag/{{repositoryUser}}/{{repositoryName}}/{{tagName}}/{{imageId}}/delete" alt="Delete tag">
-      <span class="glyphicon glyphicon-trash"></span> Delete Tag
-    </a>
-  </div>-->
 
 </h1>
 

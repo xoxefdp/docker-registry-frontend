@@ -136,10 +136,6 @@ angular.module('registry-services', ['ngResource'])
           return res;
         },
       },
-      'delete': {
-        url: '/v1/repositories/:repoUser/:repoName/tags/:tagName',
-        method: 'DELETE',
-      },
       'exists': {
         url: '/v1/repositories/:repoUser/:repoName/tags/:tagName',
         method: 'GET',
@@ -158,7 +154,7 @@ angular.module('registry-services', ['ngResource'])
   }])
   .factory('Manifest', ['$resource', function($resource){
 
-    return $resource('/v2/:repoUser/:repoName/manifests/:tagName', {}, {
+    return $resource('/v2/:repository/manifests/:tagName', {}, {
       // Response example:
       // {
       //   "schemaVersion": 1,
@@ -184,6 +180,9 @@ angular.module('registry-services', ['ngResource'])
       // }
       'query': {
         method:'GET',
+        headers: {
+            accept: 'application/vnd.docker.distribution.manifest.v2+json',
+        },
         isArray: false,
         transformResponse: function(data, headers){
           var res = {};
@@ -222,13 +221,17 @@ angular.module('registry-services', ['ngResource'])
           res.architecture = resp.architecture;
           return res;
         },
-      }
+      },
+      'delete': {
+          url: '/v2/:repository/manifests/:digest',
+          method: 'DELETE',
+      },
     });
   }])
   // This is not totally working right now (problem with big layers)
   /*
   .factory('Blob', ['$resource', function($resource){
-    return $resource('/v2/:repoUser/:repoName/blobs/:digest', {}, {
+    return $resource('/v2/:repository/blobs/:digest', {}, {
 
       'query': {
         method:'HEAD',

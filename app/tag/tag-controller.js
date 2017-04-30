@@ -66,10 +66,16 @@ angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode
         if(!isNaN(idx)){
           tmpIdx = parseInt(idx) + idxShift;
           if ( result[tmpIdx].hasOwnProperty('name') ) {
-              result[tmpIdx].details = Manifest.query({repoUser: $scope.repositoryUser, repoName: $scope.repositoryName, tagName: result[tmpIdx].name});
+              result[tmpIdx].details = Manifest.query({repository: $scope.repository, tagName: result[tmpIdx].name});
           }
         }
       }
+
+       $scope.$watch('displayedTags|filter:{selected:true}', function(nv) {
+         $scope.selection = nv.map(function (tag) {
+           return $scope.repository + ':' + tag.name;
+         });
+       }, true);
     });
 
     // selected tags
