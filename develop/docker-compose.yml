@@ -9,6 +9,8 @@ services:
       - "35729:35729"
     depends_on:
       - registry
+    networks:
+      dev_net:
     volumes:
       - ../:/source:rw
       - ./start-develop.sh:/root/start-develop.sh:ro
@@ -23,6 +25,14 @@ services:
       dev_net:
         aliases:
           - path-to-your-registry-v2
+  nginx:
+    image: nginx:1.13.12-alpine
+    ports:
+      - 8080:80
+    networks:
+      dev_net:
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
 
 networks:
   dev_net:
