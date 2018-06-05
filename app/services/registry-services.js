@@ -38,7 +38,15 @@ angular.module('registry-services', ['ngResource'])
       'query': {
         method:'GET',
         isArray: false,
-        transformResponse: function(data, headers){
+        transformResponse: function(data, headers, status){
+          if (status !== 200) {
+            return {
+              repos: [],
+              lastNamespace: undefined,
+              lastRepository: undefined
+            };
+          }
+
           var repos = angular.fromJson(data).repositories;
 
           // Extract the "last=" part from Link header:
@@ -220,7 +228,7 @@ angular.module('registry-services', ['ngResource'])
         interceptor: function(data, headers){
           var res = {contentLength: parseInt(headers('content-length'))};
           return res;
-        } 
+        }
       }
 
     });
