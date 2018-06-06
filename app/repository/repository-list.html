@@ -77,7 +77,7 @@
     </li>
     <li class="next" ng-class="{disabled: !repositories.lastNamespace || !repositories.lastRepository}">
       <!-- TODO: Make sure the button is not clickable -->
-      <a href="/repositories/{{reposPerPage}}/{{repositories.lastNamespace}}/{{repositories.lastRepository}}"
+      <a href="repositories/{{reposPerPage}}/{{repositories.lastNamespace}}/{{repositories.lastRepository}}"
         ng-disabled="!repositories.lastNamespace || !repositories.lastRepository">
         Next <span aria-hidden="true">&rarr;</span>
       </a>
