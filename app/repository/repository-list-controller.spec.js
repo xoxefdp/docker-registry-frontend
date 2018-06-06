@@ -35,7 +35,7 @@ describe('RepositoryListController', function() {
     spyOn(mockRepository, 'query').and.returnValue({$promise: $q.when(mockRepositoryReturnValue)});
 
     var expectedAppMode = {"browseOnly": true, "defaultRepositoriesPerPage": 20, "defaultTagsPerPage": 10};
-    $httpBackend.expectGET('/app-mode.json').respond(expectedAppMode);
+    $httpBackend.expectGET('app-mode.json').respond(expectedAppMode);
     var ctrl = $controller('RepositoryListController', {$scope: $scope, $route: route, Repository: mockRepository});
     $httpBackend.flush();
     expect($scope.reposPerPage).toBe(10);

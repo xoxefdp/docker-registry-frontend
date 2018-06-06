@@ -25,7 +25,7 @@ describe('docker-registry-frontend', function() {
       "defaultTagsPerPage": 10
     }
     $controller('HomeController', {$scope: scope});
-    $httpBackend.expectGET('/app-mode.json').respond(expectedAppMode);
+    $httpBackend.expectGET('app-mode.json').respond(expectedAppMode);
     $httpBackend.flush();
     jasmine.addCustomEqualityTester(angular.equals);
     expect(scope.appMode).toEqual(expectedAppMode);
