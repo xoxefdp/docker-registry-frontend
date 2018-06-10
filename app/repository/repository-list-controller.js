@@ -1,5 +1,35 @@
 'use strict';
 
+
+function getCurrentLastRepository(params) {
+  return [
+    params.lastNamespace,
+    params.lastRepository
+  ].filter(function(p) {
+    return !!p;
+  })
+  .join('\\');
+}
+
+function getNumberOfReposPerPage(params) {
+  return params.reposPerPage
+    ? parseInt(params.reposPerPage, 10)
+    : undefined;
+}
+
+function buildQueryObject() {
+  var queryObject = {};
+
+  if (this.reposPerPage) {
+    queryObject['n'] = this.reposPerPage;
+  }
+
+  if (this.currentLastRepository) {
+    queryObject['last'] = ''+this.currentLastRepository;
+  }
+
+  return queryObject;
+}
 /**
  * @ngdoc function
  * @name docker-registry-frontend.controller:RepositoryListController
@@ -8,33 +38,16 @@
  * Controller of the docker-registry-frontend
  */
 angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'registry-services', 'app-mode-services'])
-  .controller('RepositoryListController', ['$scope', '$route', '$routeParams', '$location', '$modal', 'Repository', 'AppMode',
-  function($scope, $route, $routeParams, $location, $modal, Repository, AppMode){
+  .controller('RepositoryListController', ['$scope', '$route', '$location', '$modal', 'Repository', 'AppMode',
+  function($scope, $route, $location, $modal, Repository, AppMode){
+    var queryObject;
 
-    $scope.$route = $route;
-    $scope.$location = $location;
-    $scope.$routeParams = $routeParams;
+    $scope.appMode = AppMode.query();
 
-    $scope.repositoryUser = $route.current.params.repositoryUser;
-    $scope.repositoryName = $route.current.params.repositoryName;
-    $scope.repository = $scope.repositoryUser + '/' + $scope.repositoryName;
+    $scope.reposPerPage = getNumberOfReposPerPage($route.current.params) || $scope.reposPerPage;
+    $scope.currentLastRepository = getCurrentLastRepository($route.current.params);
+    queryObject = buildQueryObject.call($scope);
 
-    AppMode.query(function(result) {
-      $scope.appMode = result;
-    });
-    // How to query the repository
-    if ($route.current.params.reposPerPage) {
-      $scope.reposPerPage = parseInt($route.current.params.reposPerPage, 10);
-    }
-    $scope.lastNamespace = $route.current.params.lastNamespace;
-    $scope.lastRepository = $route.current.params.lastRepository;
-    var queryObject = {};
-    if ($scope.reposPerPage) {
-      queryObject['n'] = $scope.reposPerPage;
-    }
-    if ($scope.lastNamespace && $scope.lastRepository) {
-      queryObject['last'] = ''+$scope.lastNamespace+'/'+$scope.lastRepository;
-    }
     $scope.repositories = Repository.query(queryObject);
 
     // selected repos
@@ -46,7 +59,7 @@ angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'regist
     };
 
     $scope.page = function(num){
-      $location.path("repositories/" + num + "/" + $scope.lastNamespace + "/" + $scope.lastRepository);
+      $location.path("repositories/" + num + "/" + $scope.currentLastRepository);
     }
 
     // Watch repos for changes

@@ -36,11 +36,12 @@ describe('RepositoryListController', function() {
 
     var expectedAppMode = {"browseOnly": true, "defaultRepositoriesPerPage": 20, "defaultTagsPerPage": 10};
     $httpBackend.expectGET('app-mode.json').respond(expectedAppMode);
+
     var ctrl = $controller('RepositoryListController', {$scope: $scope, $route: route, Repository: mockRepository});
     $httpBackend.flush();
+
     expect($scope.reposPerPage).toBe(10);
-    expect($scope.lastNamespace).toEqual('lastNamespace');
-    expect($scope.lastRepository).toEqual('lastRepository');
+    expect($scope.currentLastRepository).toEqual('lastNamespace\\lastRepository');
     expect($scope.selectedRepositories).toEqual(['name']);
     expect(mockRepository.query).toHaveBeenCalled();
     expect($scope.repositories).toEqual(mockRepositoryReturnValue);
