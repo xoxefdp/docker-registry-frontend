@@ -49,8 +49,8 @@
 
 <nav>
   <ul class="pager">
-    <li class="previous" ng-class="{disabled: !currentLastRepository}">
-      <a href="repositories/{{reposPerPage}}">
+    <li class="previous" ng-class="{disabled: isFirstPage}">
+      <a ng-click="previousPage()">
         <span aria-hidden="true">&larr;</span>
         First page
       </a>
@@ -75,10 +75,8 @@
         </ul>
       </div>
     </li>
-    <li class="next" ng-class="{disabled: !repositories.lastNamespace || !repositories.lastRepository}">
-      <!-- TODO: Make sure the button is not clickable -->
-      <a href="repositories/{{reposPerPage}}/{{repositories.lastNamespace}}/{{repositories.lastRepository}}"
-        ng-disabled="!repositories.lastNamespace || !repositories.lastRepository">
+    <li class="next" ng-class="{disabled: isLastPage}">
+      <a ng-click="nextPage()">
         Next <span aria-hidden="true">&rarr;</span>
       </a>
     </li>

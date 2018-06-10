@@ -31,8 +31,7 @@ function getLast(link) {
  *
  * We only want to extract the "last" part and store it like this
  *
- *   lastNamespace = namespace
- *   lastRepository = repository
+ *   lastRepository = namespace/repository
  **/
 function linkParser(linkHeader) {
   var namespace;
@@ -46,12 +45,10 @@ function linkParser(linkHeader) {
     link = getNextLink(linkHeader)
     url = getURL(link)
     last = getLast(url);
-    parts = last ? last.split('%2F') : [];
-    namespace = parts[0];
-    repository = parts[1];
+    repository = last ? last.replace('%2F', '/') : undefined;
   }
 
-  return { namespace: namespace, repository: repository };
+  return { repository: repository };
 }
 
 angular.module('registry-services', ['ngResource'])
@@ -89,7 +86,6 @@ angular.module('registry-services', ['ngResource'])
           if (status !== 200) {
             return {
               repos: [],
-              lastNamespace: undefined,
               lastRepository: undefined
             };
           }
@@ -98,7 +94,6 @@ angular.module('registry-services', ['ngResource'])
           var last = linkParser(headers()['link'])
           var ret = {
             repos: [],
-            lastNamespace: last.namespace,
             lastRepository: last.repository
           };
 

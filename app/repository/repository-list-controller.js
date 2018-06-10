@@ -62,11 +62,26 @@ angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'regist
       $location.path("repositories/" + num + "/" + $scope.currentLastRepository);
     }
 
+    $scope.nextPage = function() {
+      if (!$scope.isLastPage) {
+        $location.path("/repositories/" + $scope.reposPerPage + "/" + $scope.repositories.lastRepository)
+      }
+    }
+
+    $scope.previousPage = function() {
+      if (!$scope.isFirstPage) {
+        $location.path("repositories/" + $scope.reposPerPage);
+      }
+    }
+
     // Watch repos for changes
     // To watch for changes on a property inside the object "repositories"
     // we first have to make sure the promise is ready.
     $scope.repositories.$promise.then(function(data) {
       $scope.repositories = data;
+
+      $scope.isLastPage = !data.lastRepository;
+      $scope.isFirstPage = !$scope.currentLastRepository;
       $scope.$watch('repositories.repos|filter:{selected:true}', function(nv) {
         $scope.selectedRepositories = nv.map(function (repo) {
           return repo.name;

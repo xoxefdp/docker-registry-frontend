@@ -29,7 +29,6 @@ describe('registry-service', function () {
           name: 'nginx',
           selected: false
         });
-        expect(result.lastNamespace).toBeUndefined;
         expect(result.lastRepository).toBeUndefined;
       }));
     });
@@ -52,7 +51,6 @@ describe('registry-service', function () {
           name: 'redis',
           selected: false
         });
-        expect(result.lastNamespace).toBeUndefined;
         expect(result.lastRepository).toBeUndefined;
       }));
     });
@@ -78,8 +76,7 @@ describe('registry-service', function () {
             name: 'redis',
             selected: false
           });
-          expect(result.lastNamespace).toEqual('namespace');
-          expect(result.lastRepository).toEqual('repository');
+          expect(result.lastRepository).toEqual('namespace/repository');
         }));
       });
 
@@ -103,8 +100,7 @@ describe('registry-service', function () {
             name: 'redis',
             selected: false
           });
-          expect(result.lastNamespace).toEqual('repository');
-          expect(result.lastRepository).toBeUndefined;
+          expect(result.lastRepository).toEqual('repository');
         }));
       });
 
@@ -128,7 +124,6 @@ describe('registry-service', function () {
             name: 'redis',
             selected: false
           });
-          expect(result.lastNamespace).toBeUndefined;
           expect(result.lastRepository).toBeUndefined;
         }));
       });
@@ -153,7 +148,6 @@ describe('registry-service', function () {
             name: 'redis',
             selected: false
           });
-          expect(result.lastNamespace).toBeUndefined;
           expect(result.lastRepository).toBeUndefined;
         }));
       });
@@ -178,7 +172,6 @@ describe('registry-service', function () {
             name: 'redis',
             selected: false
           });
-          expect(result.lastNamespace).toBeUndefined;
           expect(result.lastRepository).toBeUndefined;
         }));
       });

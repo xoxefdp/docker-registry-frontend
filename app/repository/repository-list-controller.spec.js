@@ -28,8 +28,7 @@ describe('RepositoryListController', function() {
 
     var mockRepositoryReturnValue = {
       repos: [{username: 'username', name: 'name', selected: true}],
-      lastNamespace: 'lastNamespace',
-      lastRepository: 'lastRepository'
+      lastRepository: 'lastNamespace/lastRepository'
     };
     var mockRepository = {query: null};
     spyOn(mockRepository, 'query').and.returnValue({$promise: $q.when(mockRepositoryReturnValue)});
