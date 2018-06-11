@@ -7,13 +7,12 @@
  * # TagController
  * Controller of the docker-registry-frontend
  */
-angular.module('tag-controller', ['registry-services'])
-  .controller('TagController', ['$scope', '$route', '$routeParams', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$modal',
-  function($scope, $route, $routeParams, $location, $filter, Manifest, Tag, AppMode, filterFilter, $modal){
+angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode-services'])
+  .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$modal',
+  function($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $modal){
 
     $scope.$route = $route;
     $scope.$location = $location;
-    $scope.$routeParams = $routeParams;
 
     $scope.searchName = $route.current.params.searchName;
     $scope.repositoryUser = $route.current.params.repositoryUser;
@@ -34,10 +33,12 @@ angular.module('tag-controller', ['registry-services'])
     });
 
     // Fetch tags
-    $scope.tags = Tag.query({
+    Tag.query({
       repoUser: $scope.repositoryUser,
       repoName: $scope.repositoryName
-    }, function(result){
+    }).$promise.then(function(result){
+      $scope.tags = result;
+
       // Determine the number of pages
       $scope.maxTagsPage = parseInt(Math.ceil(parseFloat(result.length)/parseFloat($scope.tagsPerPage)));
       // Compute the right current page number
@@ -52,7 +53,9 @@ angular.module('tag-controller', ['registry-services'])
       }
       // Select wanted tags
       var idxShift = 0;
-      $scope.displayedTags = $scope.tags;
+      // Copy collection for rendering in a smart-table
+      $scope.displayedTags = [].concat($scope.tags);
+
       if($scope.tagsPerPage){
         idxShift = ($scope.tagsCurrentPage - 1) * $scope.tagsPerPage;
         $scope.displayedTags = $scope.displayedTags.slice(idxShift, ($scope.tagsCurrentPage ) * $scope.tagsPerPage );
@@ -68,12 +71,6 @@ angular.module('tag-controller', ['registry-services'])
         }
       }
     });
-
-
-
-    // Copy collection for rendering in a smart-table
-    $scope.displayedTags = [].concat($scope.tags);
-
 
     // selected tags
     $scope.selection = [];
