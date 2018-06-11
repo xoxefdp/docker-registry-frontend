@@ -49,7 +49,7 @@
 
 <nav>
   <ul class="pager">
-    <li class="previous" ng-class="{disabled: isFirstPage}">
+    <li role="button" class="previous" ng-class="{disabled: isFirstPage}">
       <a ng-click="previousPage()">
         <span aria-hidden="true">&larr;</span>
         First page
@@ -75,7 +75,7 @@
         </ul>
       </div>
     </li>
-    <li class="next" ng-class="{disabled: isLastPage}">
+    <li role="button" class="next" ng-class="{disabled: isLastPage}">
       <a ng-click="nextPage()">
         Next <span aria-hidden="true">&rarr;</span>
       </a>

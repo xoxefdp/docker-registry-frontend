@@ -12,7 +12,7 @@
       <tr>
         <th  ng-class="{strike: deleted}"><span class="glyphicon glyphicon-tag"></span> Tag</th>
         <th ><span class="glyphicon glyphicon-qrcode"></span> Image ID</th>
-        <th ng-click="sortTags()" ng-class="{dropup: orderByCreated==true, dropdown: orderByCreated==false}">
+        <th role="button" ng-click="sortTags()" ng-class="{dropup: orderByCreated==true, dropdown: orderByCreated==false}">
           <span class="glyphicon glyphicon-calendar"></span>
           Created
           <span class="caret"></span>
