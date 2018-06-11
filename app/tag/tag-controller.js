@@ -93,11 +93,8 @@ angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode
     $scope.sortTags = function(){
       if($scope.orderByCreated){
         $scope.displayedTags.sort(compare);
-      }
-      else{
-        // if $scope.orderByCreated is false, that means $scope.displayedTags.sort(compare) has been invoked.
-        // then just need to call reverse() function
-        $scope.displayedTags.reverse();
+      } else{
+        $scope.displayedTags.sort(compare).reverse();
       }
 
       $scope.orderByCreated = !$scope.orderByCreated;

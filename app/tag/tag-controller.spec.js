@@ -75,6 +75,43 @@ describe('TagController', function() {
       }]);
       expect($scope.orderByCreated).toBeFalsy();
     });
+
+    it('should sort tags Descending', function() {
+      var $scope = $rootScope.$new();
+      var route = buildRoute();
+      var mockTag = mockTagService($q);
+      mockAppMode($httpBackend);
+
+      var ctrl = $controller('TagController', {$scope: $scope, $route: route, Tag: mockTag});
+      $httpBackend.flush();
+      $scope.displayedTags = [{
+        name: 'aaa',
+        details: {
+          created: '2015-03-25',
+        },
+      }, {
+        name: 'bbb',
+        details: {
+          created: '2015-03-20',
+        },
+      }];
+      $scope.orderByCreated = false
+      expect($scope.orderByCreated).toBeFalsy();
+
+      $scope.sortTags();
+      expect($scope.displayedTags).toEqual([{
+        name: 'aaa',
+        details: {
+          created: '2015-03-25',
+        },
+      }, {
+        name: 'bbb',
+        details: {
+          created: '2015-03-20',
+        },
+      }]);
+      expect($scope.orderByCreated).toBeTruthy();
+    });
   });
 });
 
