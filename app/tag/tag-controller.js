@@ -8,8 +8,8 @@
  * Controller of the docker-registry-frontend
  */
 angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode-services'])
-  .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$modal',
-  function($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $modal){
+  .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$modal', 'Blob',
+  function($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $modal, Blob){
 
     $scope.$route = $route;
     $scope.$location = $location;
@@ -60,16 +60,28 @@ angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode
         idxShift = ($scope.tagsCurrentPage - 1) * $scope.tagsPerPage;
         $scope.displayedTags = $scope.displayedTags.slice(idxShift, ($scope.tagsCurrentPage ) * $scope.tagsPerPage );
       }
-      var tmpIdx;
+
       // Fetch wanted manifests
-      for (var idx in $scope.displayedTags){
-        if(!isNaN(idx)){
-          tmpIdx = parseInt(idx) + idxShift;
-          if ( result[tmpIdx].hasOwnProperty('name') ) {
-              result[tmpIdx].details = Manifest.query({repository: $scope.repository, tagName: result[tmpIdx].name});
-          }
+      $scope.displayedTags.forEach(function(tag) {
+        if ( tag.hasOwnProperty('name') ) {
+          Manifest.query({repository: $scope.repository, tagName: tag.name})
+            .$promise.then(function(data) {
+              tag.details = angular.copy(data);
+              return !data.isSchemaV2
+                ? undefined
+                : Blob.query({repository: $scope.repository, digest: 'sha256:'+data.id})
+                  .$promise.then(function(config) {
+                    tag.details.created = config.created;
+                    tag.details.docker_version = config.docker_version;
+                    tag.details.os = config.os;
+                    tag.details.architecture = config.architecture;
+                    tag.details.labels = config.container_config && config.container_config.Labels;
+                    tag.details.dockerfile = config.dockerfile;
+                    tag.details.layers = config.dockerfile.length;
+                  });
+            });
         }
-      }
+      });
 
        $scope.$watch('displayedTags|filter:{selected:true}', function(nv) {
          $scope.selection = nv.map(function (tag) {
