@@ -3,9 +3,7 @@
 // Generated on 2014-09-12 using
 // generator-karma 0.8.3
 
-module.exports = function(config) {
-  'use strict';
-
+module.exports = (config) => {
   config.set({
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
@@ -36,7 +34,7 @@ module.exports = function(config) {
       'node_modules/angular-smart-table/src/smart-table.module.js',
       'node_modules/angular-touch/angular-touch.js',
       'app/**/*.js',
-      'test/spec/**/*.js'
+      'test/spec/**/*.js',
     ],
 
     // list of files / patterns to exclude
@@ -54,7 +52,7 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows)
     browsers: [
-      'PhantomJS'
+      'PhantomJS',
     ],
 
     // Which plugins to enable
@@ -86,12 +84,12 @@ module.exports = function(config) {
     babelPreprocessor: {
       options: {
         presets: ['env'],
-        sourceMap: 'inline'
+        sourceMap: 'inline',
       },
-      filename: function (file) {
+      filename(file) {
         return file.originalPath.replace(/\.js$/, '.es5.js');
       },
-      sourceFileName: function (file) {
+      sourceFileName(file) {
         return file.originalPath;
       },
     },

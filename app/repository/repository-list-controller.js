@@ -1,14 +1,11 @@
-'use strict';
 
 
 function getCurrentLastRepository(params) {
   return [
     params.lastNamespace,
-    params.lastRepository
-  ].filter(function(p) {
-    return !!p;
-  })
-  .join('\\');
+    params.lastRepository,
+  ].filter(p => !!p)
+    .join('\\');
 }
 
 function getNumberOfReposPerPage(params) {
@@ -18,14 +15,14 @@ function getNumberOfReposPerPage(params) {
 }
 
 function buildQueryObject() {
-  var queryObject = {};
+  const queryObject = {};
 
   if (this.reposPerPage) {
-    queryObject['n'] = this.reposPerPage;
+    queryObject.n = this.reposPerPage;
   }
 
   if (this.currentLastRepository) {
-    queryObject['last'] = ''+this.currentLastRepository;
+    queryObject.last = `${this.currentLastRepository}`;
   }
 
   return queryObject;
@@ -39,80 +36,70 @@ function buildQueryObject() {
  */
 angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'registry-services', 'app-mode-services'])
   .controller('RepositoryListController', ['$scope', '$route', '$location', '$modal', 'Repository', 'AppMode',
-  function($scope, $route, $location, $modal, Repository, AppMode){
-    var queryObject;
+    ($scope, $route, $location, $modal, Repository, AppMode) => {
+      $scope.appMode = AppMode.query();
 
-    $scope.appMode = AppMode.query();
+      $scope.reposPerPage = getNumberOfReposPerPage($route.current.params) || $scope.reposPerPage;
+      $scope.currentLastRepository = getCurrentLastRepository($route.current.params);
+      const queryObject = buildQueryObject.call($scope);
 
-    $scope.reposPerPage = getNumberOfReposPerPage($route.current.params) || $scope.reposPerPage;
-    $scope.currentLastRepository = getCurrentLastRepository($route.current.params);
-    queryObject = buildQueryObject.call($scope);
+      $scope.repositories = Repository.query(queryObject);
 
-    $scope.repositories = Repository.query(queryObject);
+      // selected repos
+      $scope.selectedRepositories = [];
 
-    // fold/unfold repos in a username
-    var reposHide = {};
+      // helper method to get selected tags
+      $scope.selectedRepos = () => filterFilter($scope.repositories.repos, { selected: true });
 
-    // selected repos
-    $scope.selectedRepositories = [];
+      $scope.page = (num) => {
+        $location.path(`repositories/${num}/${$scope.currentLastRepository}`);
+      };
 
-    // helper method to get selected tags
-    $scope.selectedRepos = function selectedRepos() {
-      return filterFilter($scope.repositories.repos, { selected: true });
-    };
+      $scope.nextPage = () => {
+        if (!$scope.isLastPage) {
+          $location.path(`/repositories/${$scope.reposPerPage}/${$scope.repositories.lastRepository}`);
+        }
+      };
 
-    $scope.page = function(num){
-      $location.path("repositories/" + num + "/" + $scope.currentLastRepository);
-    }
+      $scope.previousPage = () => {
+        if (!$scope.isFirstPage) {
+          $location.path(`repositories/${$scope.reposPerPage}`);
+        }
+      };
 
-    $scope.nextPage = function() {
-      if (!$scope.isLastPage) {
-        $location.path("/repositories/" + $scope.reposPerPage + "/" + $scope.repositories.lastRepository)
-      }
-    }
+      // Watch repos for changes
+      // To watch for changes on a property inside the object "repositories"
+      // we first have to make sure the promise is ready.
+      $scope.repositories.$promise.then((data) => {
+        $scope.repositories = data;
 
-    $scope.previousPage = function() {
-      if (!$scope.isFirstPage) {
-        $location.path("repositories/" + $scope.reposPerPage);
-      }
-    }
+        $scope.isLastPage = !data.lastRepository;
+        $scope.isFirstPage = !$scope.currentLastRepository;
+        $scope.$watch('repositories.repos|filter:{selected:true}', (nv) => {
+          $scope.selectedRepositories = nv.map(repo => repo.name);
+        }, true);
+      });
 
-    // Watch repos for changes
-    // To watch for changes on a property inside the object "repositories"
-    // we first have to make sure the promise is ready.
-    $scope.repositories.$promise.then(function(data) {
-      $scope.repositories = data;
-
-      $scope.isLastPage = !data.lastRepository;
-      $scope.isFirstPage = !$scope.currentLastRepository;
-      $scope.$watch('repositories.repos|filter:{selected:true}', function(nv) {
-        $scope.selectedRepositories = nv.map(function (repo) {
-          return repo.name;
-        });
-      }, true);
-    });
-
-    $scope.openConfirmRepoDeletionDialog = function(size) {
-      var modalInstance = $modal.open({
+      $scope.openConfirmRepoDeletionDialog = (size) => {
+        $modal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteRepositoryController',
-          size: size,
+          size,
           resolve: {
-            items: function () {
+            items() {
               return $scope.selectedRepositories;
             },
-            information: function() {
-              return 'A repository is a collection of tags. \
-                      A tag is basically a reference to an image. \
-                      If no references to an image exist, the image will be scheduled for automatic deletion. \
-                      That said, if you remove a tag, you remove a reference to an image. \
-                      Your image data may get lost, if no other tag references it. \
-                      If you delete a repository, you delete all tags associated with it. \
-                      Are you sure, you want to delete the following repositories?';
-            }
-          }
-      });
-    };
-
-  }]);
+            information() {
+              return `A repository is a collection of tags.
+                      A tag is basically a reference to an image.
+                      If no references to an image exist, the image will be scheduled for automatic deletion.
+                      That said, if you remove a tag, you remove a reference to an image.
+                      Your image data may get lost, if no other tag references it.
+                      If you delete a repository, you delete all tags associated with it.
+                      Are you sure, you want to delete the following repositories?`;
+            },
+          },
+        });
+      };
+    }]);

@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * @ngdoc overview
@@ -36,54 +36,53 @@ angular
     'app-mode-services',
     'smart-table',
     'angular.filter',
-    'ui.checkbox'
+    'ui.checkbox',
   ])
   .config(['$routeProvider', '$resourceProvider', 'cfpLoadingBarProvider', '$locationProvider',
-      function($routeProvider, $resourceProvider, cfpLoadingBarProvider, $locationProvider){
+    ($routeProvider, $resourceProvider, cfpLoadingBarProvider, $locationProvider) => {
+      $locationProvider.html5Mode(true);
 
-     $locationProvider.html5Mode(true);
+      // Don't show the spinner when making XHR requests.
+      // Also, show the bar only if an XHR request takes longer than 50ms.
+      cfpLoadingBarProvider.includeSpinner = false;
+      cfpLoadingBarProvider.latencyThreshold = 10;
 
-    // Don't show the spinner when making XHR requests.
-    // Also, show the bar only if an XHR request takes longer than 50ms.
-    cfpLoadingBarProvider.includeSpinner = false;
-    cfpLoadingBarProvider.latencyThreshold = 10;
+      // Don't strip trailing slashes from calculated URLs
+      $resourceProvider.defaults.stripTrailingSlashes = false;
 
-    // Don't strip trailing slashes from calculated URLs
-    $resourceProvider.defaults.stripTrailingSlashes = false;
-
-    $routeProvider.
-      when('/home', {
-        templateUrl: 'home.html',
-        controller: 'HomeController',
-      }).
-      when('/repositories/:reposPerPage?/:lastNamespace?/:lastRepository?', {
-        templateUrl: 'repository/repository-list.html',
-        controller: 'RepositoryListController'
-      }).
-      when('/repository/:repositoryUser/:repositoryName', {
-        templateUrl: 'repository/repository-detail.html',
-        controller: 'RepositoryDetailController'
-      }).
-      when('/repository/:repositoryName', {
-        templateUrl: 'repository/repository-detail.html',
-        controller: 'RepositoryDetailController'
-      }).
-	    when('/about', {
-        templateUrl: 'about.html',
-      }).
-      when('/tag/:repositoryUser?/:repositoryName/:tagName/', {
-        templateUrl: 'tag/tag-detail.html',
-        controller: 'TagController',
-      }).
-      when('/image/:imageId', {
-        templateUrl: 'tag/image-detail.html',
-        controller: 'ImageController',
-      }).
-      when('/image/:imageId/tag/:repositoryUser?/:repositoryName?', {
-        templateUrl: 'tag/create-tag.html',
-        controller: 'CreateTagController',
-      }).
-      otherwise({
-        redirectTo: '/repositories/20'
-      });
-  }]);
+      $routeProvider
+        .when('/home', {
+          templateUrl: 'home.html',
+          controller: 'HomeController',
+        })
+        .when('/repositories/:reposPerPage?/:lastNamespace?/:lastRepository?', {
+          templateUrl: 'repository/repository-list.html',
+          controller: 'RepositoryListController',
+        })
+        .when('/repository/:repositoryUser/:repositoryName', {
+          templateUrl: 'repository/repository-detail.html',
+          controller: 'RepositoryDetailController',
+        })
+        .when('/repository/:repositoryName', {
+          templateUrl: 'repository/repository-detail.html',
+          controller: 'RepositoryDetailController',
+        })
+        .when('/about', {
+          templateUrl: 'about.html',
+        })
+        .when('/tag/:repositoryUser?/:repositoryName/:tagName/', {
+          templateUrl: 'tag/tag-detail.html',
+          controller: 'TagController',
+        })
+        .when('/image/:imageId', {
+          templateUrl: 'tag/image-detail.html',
+          controller: 'ImageController',
+        })
+        .when('/image/:imageId/tag/:repositoryUser?/:repositoryName?', {
+          templateUrl: 'tag/create-tag.html',
+          controller: 'CreateTagController',
+        })
+        .otherwise({
+          redirectTo: '/repositories/20',
+        });
+    }]);

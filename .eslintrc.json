@@ -7,6 +7,7 @@
   },
   "globals": {
     "angular": true,
-    "ng": true
+    "ng": true,
+    "inject": true
   }
 }

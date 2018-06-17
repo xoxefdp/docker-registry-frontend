@@ -1,4 +1,4 @@
-'use strict';
+
 
 // This is the main entrypoint to interact with the Docker registry.
 
@@ -8,19 +8,17 @@
 // https://docs.angularjs.org/api/ngResource/service/$resource
 
 function getNextLink(linkHeader) {
-  return linkHeader.split(',').filter(function(l){
-    return /rel="next"/.test(l);
-  })[0];
+  return linkHeader.split(',').filter(l => /rel="next"/.test(l))[0];
 }
 
 function getURL(link) {
-  var regex = /<(.+)>;/g;
-  var url = link ? regex.exec(link) : undefined;
+  const regex = /<(.+)>;/g;
+  const url = link ? regex.exec(link) : undefined;
   return url ? url[1] : undefined;
 }
 
 function getLast(link) {
-  var regex = /last=(.+)&/g;
+  const regex = /last=(.+)&/g;
   return link ? regex.exec(link)[1] : undefined;
 }
 
@@ -32,23 +30,21 @@ function getLast(link) {
  * We only want to extract the "last" part and store it like this
  *
  *   lastRepository = namespace/repository
- **/
+ * */
 function linkParser(linkHeader) {
-  var namespace;
-  var repository;
-  var last;
-  var link;
-  var url;
-  var parts;
+  let repository;
+  let last;
+  let link;
+  let url;
 
   if (linkHeader) {
-    link = getNextLink(linkHeader)
-    url = getURL(link)
+    link = getNextLink(linkHeader);
+    url = getURL(link);
     last = getLast(url);
     repository = last ? last.replace('%2F', '/') : undefined;
   }
 
-  return { repository: repository };
+  return { repository };
 }
 
 function handelSchemaV1(data) {
@@ -76,40 +72,33 @@ function handelSchemaV1(data) {
    *     }
    *   ],
    * }
-   **/
+   * */
 
-  var dockerFile;
-  var res = {};
-  var history = data.history.map(function(history) {
-    return angular.fromJson(history.v1Compatibility);
-  }).filter(function(history) {
-    return history !== undefined;
-  }).map(function(history) {
-    return {
-      id: history.id,
-      os: history.os,
-      docker_version: history.docker_version,
-      created: history.created,
-      author: history.author,
-      labels: history.config && history.config.Labels,
-      layerCmd: history.container_config && history.container_config.Cmd.join(' ')
+  let res = {};
+  const history = data.history.map(h => angular.fromJson(h.v1Compatibility))
+    .filter(h => h !== undefined)
+    .map(h => ({
+      id: h.id,
+      os: h.os,
+      docker_version: h.docker_version,
+      created: h.created,
+      author: h.author,
+      labels: h.config && h.config.Labels,
+      layerCmd: h.container_config && h.container_config.Cmd.join(' ')
         .replace(/^\/bin\/sh -c #\(nop\)\s*/, '')
         .replace('/bin/sh -c', 'RUN')
         .replace(/\t\t/g, '\\\n\t'),
-    };
-  });
+    }));
 
-  dockerFile = history.map(function(history) {
-    return history.layerCmd;
-  }).reverse();
+  const dockerFile = history.map(h => h.layerCmd).reverse();
 
-  if(history.length > 0){
+  if (history.length > 0) {
     res = history.shift();
     res.history = history;
   }
 
-  res.dockerfile = dockerFile
-  res.layers = dockerFile.length
+  res.dockerfile = dockerFile;
+  res.layers = dockerFile.length;
   res.fsLayers = data.fsLayers;
   res.architecture = data.architecture;
 
@@ -145,28 +134,26 @@ function handelSchemaV2(data) {
    *     }
    *    ]
    *   }
-   **/
+   * */
 
-  var res = {
+  const res = {
     id: data.config.digest.replace(/^sha256:/, ''),
   };
 
-  res.size = data.layers.reduce(function(size, layer) {
-    return size + layer.size;
-  }, data.config.size);
+  res.size = data.layers.reduce((size, layer) => size + layer.size, data.config.size);
 
   return res;
 }
 
 angular.module('registry-services', ['ngResource'])
-  .factory('RegistryHost', ['$resource', function($resource){
-    return $resource('registry-host.json', {}, {
-      'query': {
-        method:'GET',
+  .factory('RegistryHost', ['$resource', $resource => (
+    $resource('registry-host.json', {}, {
+      query: {
+        method: 'GET',
         isArray: false,
       },
-    });
-  }])
+    })
+  )])
   /* Repository returns:
    *
    *   {
@@ -184,94 +171,94 @@ angular.module('registry-services', ['ngResource'])
    * On subsequent calls to "Repository()" you may pass in "n" as the number of
    * elements per page as well as "last" which is the "nextLink" from the last
    * call to Repository.
-   **/
-  .factory('Repository', ['$resource', function($resource){
-    return $resource('/v2/_catalog?n=:n&last=:last', {}, {
-      'query': {
-        method:'GET',
+   * */
+  .factory('Repository', ['$resource', $resource => (
+    $resource('/v2/_catalog?n=:n&last=:last', {}, {
+      query: {
+        method: 'GET',
         isArray: false,
-        transformResponse: function(data, headers, status){
+        transformResponse(data, headers, status) {
           if (status !== 200) {
             return {
               repos: [],
-              lastRepository: undefined
+              lastRepository: undefined,
             };
           }
 
-          var repos = angular.fromJson(data).repositories;
-          var last = linkParser(headers()['link'])
-          var ret = {
+          const repos = angular.fromJson(data).repositories;
+          const last = linkParser(headers().link);
+          const ret = {
             repos: [],
-            lastRepository: last.repository
+            lastRepository: last.repository,
           };
 
-          angular.forEach(repos, function(value/*, key*/) {
+          angular.forEach(repos, (value) => {
             ret.repos.push({
-              username: ''+value.split('/')[0],
+              username: `${value.split('/')[0]}`,
               name: value,
-              selected: false
+              selected: false,
             });
           });
 
           return ret;
-        }
+        },
       },
-      'delete': {
+      delete: {
         url: '/v2/repositories/:repoUser/:repoName/',
         method: 'DELETE',
-      }
-    });
-  }])
-  .factory('Tag', ['$resource', function($resource){
+      },
+    })
+  )])
+  .factory('Tag', ['$resource', $resource => (
     // TODO: rename :repo to repoUser/repoString for convenience.
     // https://github.com/docker/distribution/blob/master/docs/spec/api.md#listing-image-tags
-    return $resource('/v2/:repoUser/:repoName/tags/list', {}, {
+    $resource('/v2/:repoUser/:repoName/tags/list', {}, {
       // Response example:
       // {"name":"kkleine/docker-registry-frontend","tags":["v2", "v1-deprecated"]}
-      'query': {
-        method:'GET',
+      query: {
+        method: 'GET',
         isArray: true,
-        transformResponse: function(data/*, headers*/){
-          var res = [];
-          var resp = angular.fromJson(data);
-          for (var idx in resp.tags){
+        transformResponse(data) {
+          const res = [];
+          const resp = angular.fromJson(data);
+          for (const idx in resp.tags) {
             res.push({
               name: resp.tags[idx],
-              imageId: 'ImageIDOf'+resp.tags[idx],
-              selected: false
+              imageId: `ImageIDOf${resp.tags[idx]}`,
+              selected: false,
             });
           }
           return res;
         },
       },
-      'exists': {
+      exists: {
         url: '/v1/repositories/:repoUser/:repoName/tags/:tagName',
         method: 'GET',
-        transformResponse: function(data/*, headers*/){
+        transformResponse(data) {
           // data will be the image ID if successful or an error object.
           data = angular.isString(angular.fromJson(data));
           return data;
         },
       },
       // Usage: Tag.save({repoUser:'someuser', repoName: 'someRepo', tagName: 'someTagName'}, imageId);
-      'save': {
-        method:'PUT',
+      save: {
+        method: 'PUT',
         url: '/v1/repositories/:repoUser/:repoName/tags/:tagName',
       },
-    });
-  }])
-  .factory('Manifest', ['$resource', function($resource){
-    return $resource('/v2/:repository/manifests/:tagName', {}, {
-      'query': {
-        method:'GET',
+    })
+  )])
+  .factory('Manifest', ['$resource', $resource => (
+    $resource('/v2/:repository/manifests/:tagName', {}, {
+      query: {
+        method: 'GET',
         headers: {
-            accept: 'application/vnd.docker.distribution.manifest.v2+json',
+          accept: 'application/vnd.docker.distribution.manifest.v2+json',
         },
         isArray: false,
-        transformResponse: function(data, headers){
-          var resp = angular.fromJson(data);
-          var isSchemaV2 = (headers('content-type') === 'application/vnd.docker.distribution.manifest.v2+json');
-          var res = isSchemaV2
+        transformResponse(data, headers) {
+          const resp = angular.fromJson(data);
+          const isSchemaV2 = (headers('content-type') === 'application/vnd.docker.distribution.manifest.v2+json');
+          const res = isSchemaV2
             ? handelSchemaV2(resp)
             : handelSchemaV1(resp);
           res.digest = headers('docker-content-digest');
@@ -280,22 +267,22 @@ angular.module('registry-services', ['ngResource'])
           return res;
         },
       },
-      'delete': {
-          url: '/v2/:repository/manifests/:digest',
-          method: 'DELETE',
+      delete: {
+        url: '/v2/:repository/manifests/:digest',
+        method: 'DELETE',
       },
-    });
-  }])
-  .factory('Blob', ['$resource', function($resource){
-    return $resource('/v2/:repository/blobs/:digest', {}, {
-      'querySize': {
-        method:'HEAD',
+    })
+  )])
+  .factory('Blob', ['$resource', $resource => (
+    $resource('/v2/:repository/blobs/:digest', {}, {
+      querySize: {
+        method: 'HEAD',
         interceptor: {
-          response: function(response){
-            var res = {contentLength: parseInt(response.headers('content-length'))};
+          response(response) {
+            const res = { contentLength: parseInt(response.headers('content-length'), 10) };
             return res;
-          }
-        }
+          },
+        },
       },
       /** Example Response:
        * {
@@ -319,20 +306,18 @@ angular.module('registry-services', ['ngResource'])
        *   "os": "linux",
        *   "rootfs": {}
        * }
-       **/
-      'query': {
+       * */
+      query: {
         method: 'GET',
-        transformResponse: function(data, headers){
+        transformResponse(data) {
           data = angular.fromJson(data);
-          data.dockerfile = data.history.map(function(history) {
-            return history.created_by
-              .replace(new RegExp('^/bin/sh -c #\\(nop\\)\\s*'), '')
-              .replace(new RegExp('^/bin/sh -c\\s*'), 'RUN ')
-              .replace(/\t\t/g, '\\\n\t');
-           });
+          data.dockerfile = data.history.map(history => history.created_by
+            .replace(new RegExp('^/bin/sh -c #\\(nop\\)\\s*'), '')
+            .replace(new RegExp('^/bin/sh -c\\s*'), 'RUN ')
+            .replace(/\t\t/g, '\\\n\t'));
 
-           return data;
-        }
-      }
-    });
-  }]);
+          return data;
+        },
+      },
+    })
+  )]);
