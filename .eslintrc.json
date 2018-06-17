@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb-base/legacy",
+  "env": {
+    "mocha": true,
+    "jasmine": true,
+    "phantomjs": true
+  },
+  "globals": {
+    "angular": true,
+    "ng": true
+  }
+}
