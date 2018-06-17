@@ -13,10 +13,6 @@
     "frontend",
     "ui"
   ],
-  "main": "Gruntfile.js",
-  "directories": {
-    "test": "test"
-  },
   "engines": {
     "node": ">=0.10.0"
   },
