@@ -3,6 +3,9 @@
   "description": "A pure web-based frontend to a docker-registry",
   "version": "2.1.0",
   "author": "Konrad Kleine",
+  "contributors": [
+    "Brad van der Laan <brad.vanderlaan@gmail.com> (http://bradvanderlaan.ca)"
+  ],
   "license": "MIT",
   "keywords": [
     "docker",
