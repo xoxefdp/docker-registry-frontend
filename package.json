@@ -14,7 +14,8 @@
     "ui"
   ],
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=8.11.1",
+    "npm": ">=5.6.0"
   },
   "repository": {
     "type": "git",
