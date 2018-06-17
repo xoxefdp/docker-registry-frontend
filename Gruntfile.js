@@ -135,6 +135,21 @@ module.exports = function (grunt) {
       }
     },
 
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['env']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '.tmp/concat/scripts',
+          src: ['scripts.js'],
+          dest: '.tmp/concat/scripts'
+        }],
+      },
+    },
+
     // Make sure code styles are up to par and there are no obvious mistakes
     eslint: {
       options: {
@@ -352,6 +367,8 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-babel');
+
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'connect:dist:keepalive']);
@@ -389,6 +406,7 @@ module.exports = function (grunt) {
     'autoprefixer',
     'concat',
     'ngAnnotate',
+    'babel:dist',
     'copy:dist',
     'cssmin',
     'uglify',
