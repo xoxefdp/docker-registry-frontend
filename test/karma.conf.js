@@ -79,5 +79,21 @@ module.exports = function(config) {
     // },
     // URL root prevent conflicts with the site root
     // urlRoot: '_karma_'
+    preprocessors: {
+      'app/**/*.js': ['babel'],
+      'test/spec/**/*.js': ['babel'],
+    },
+    babelPreprocessor: {
+      options: {
+        presets: ['env'],
+        sourceMap: 'inline'
+      },
+      filename: function (file) {
+        return file.originalPath.replace(/\.js$/, '.es5.js');
+      },
+      sourceFileName: function (file) {
+        return file.originalPath;
+      },
+    },
   });
 };
