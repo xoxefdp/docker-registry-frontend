@@ -41,10 +41,6 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         }
       },
-      jsTest: {
-        files: ['test/spec/{,*/}*.js'],
-        tasks: ['newer:eslint', 'karma']
-      },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
@@ -108,22 +104,6 @@ module.exports = function (grunt) {
             );
 
             return middlewares;
-          }
-        }
-      },
-      test: {
-        options: {
-          port: 9001,
-          middleware: function (connect) {
-            return [
-              connect.static('.tmp'),
-              connect.static('test'),
-              connect().use(
-                '/node_modules',
-                connect.static('./node_modules')
-              ),
-              connect.static(appConfig.app)
-            ];
           }
         }
       },
@@ -348,23 +328,12 @@ module.exports = function (grunt) {
       server: [
         'copy:styles'
       ],
-      test: [
-        'copy:styles'
-      ],
       dist: [
         'copy:styles',
         'imagemin',
         'svgmin'
       ]
     },
-
-    // Test settings
-    karma: {
-      unit: {
-        configFile: 'test/karma.conf.js',
-        singleRun: true
-      }
-    }
   });
 
   grunt.loadNpmTasks('grunt-babel');
@@ -389,15 +358,7 @@ module.exports = function (grunt) {
     grunt.task.run(['serve:' + target]);
   });
 
-  grunt.registerTask('test', [
-    'clean:server',
-    'concurrent:test',
-    'autoprefixer',
-    'connect:test',
-    'karma'
-  ]);
-
-  grunt.registerTask('lint', [ 'eslint' ]);
+  grunt.registerTask('lint', ['eslint']);
 
   grunt.registerTask('build', [
     'clean:dist',
@@ -417,7 +378,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', [
     'newer:eslint',
-    'test',
     'build'
   ]);
 };
