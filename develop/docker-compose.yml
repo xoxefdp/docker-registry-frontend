@@ -17,6 +17,7 @@ services:
     environment:
       - DOCKER_REGISTRY_HOST=registry
       - DOCKER_REGISTRY_PORT=5000
+      - NODE_NO_HTTP2=1
   registry:
     image: registry:2.1.1
     expose:

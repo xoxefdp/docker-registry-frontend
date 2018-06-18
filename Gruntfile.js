@@ -7,6 +7,7 @@ const gruntTime = require('time-grunt');
 // See http://stackoverflow.com/questions/17080494/using-grunt-server-how-can-i-redirect-all-requests-to-root-url
 const modRewrite = require('connect-modrewrite');
 const gruntConnectProxy = require('grunt-connect-proxy/lib/utils');
+const serveStatic = require('serve-static');
 
 // # Globbing
 // for performance reasons we're only matching one level down:
@@ -97,9 +98,9 @@ module.exports = (grunt) => {
             middlewares.push(gruntConnectProxy.proxyRequest);
 
             // Serve static files
-            middlewares.push(connect.static('.tmp'));
-            middlewares.push(connect().use('/node_modules', connect.static('./node_modules')));
-            middlewares.push(connect.static(appConfig.app));
+            middlewares.push(serveStatic('.tmp'));
+            middlewares.push(connect().use('/node_modules', serveStatic('./node_modules')));
+            middlewares.push(serveStatic(appConfig.app));
 
             return middlewares;
           },
