@@ -35,8 +35,8 @@ function buildQueryObject() {
  * Controller of the docker-registry-frontend
  */
 angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'registry-services', 'app-mode-services'])
-  .controller('RepositoryListController', ['$scope', '$route', '$location', '$modal', 'Repository', 'AppMode',
-    ($scope, $route, $location, $modal, Repository, AppMode) => {
+  .controller('RepositoryListController', ['$scope', '$route', '$location', '$uibModal', 'Repository', 'AppMode',
+    ($scope, $route, $location, $uibModal, Repository, AppMode) => {
       $scope.appMode = AppMode.query();
 
       $scope.reposPerPage = getNumberOfReposPerPage($route.current.params) || $scope.reposPerPage;
@@ -81,7 +81,7 @@ angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'regist
       });
 
       $scope.openConfirmRepoDeletionDialog = (size) => {
-        $modal.open({
+        $uibModal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteRepositoryController',

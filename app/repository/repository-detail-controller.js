@@ -8,8 +8,8 @@
  * Controller of the docker-registry-frontend
  */
 angular.module('repository-detail-controller', ['registry-services', 'app-mode-services'])
-  .controller('RepositoryDetailController', ['$scope', '$route', '$routeParams', '$location', '$log', '$modal', 'Repository', 'AppMode',
-    ($scope, $route, $routeParams, $location, $log, $modal, Repository, AppMode) => {
+  .controller('RepositoryDetailController', ['$scope', '$route', '$routeParams', '$location', '$log', '$uibModal', 'Repository', 'AppMode',
+    ($scope, $route, $routeParams, $location, $log, $uibModal, Repository, AppMode) => {
       $scope.$route = $route;
       $scope.$location = $location;
       $scope.$routeParams = $routeParams;
@@ -47,7 +47,7 @@ angular.module('repository-detail-controller', ['registry-services', 'app-mode-s
       $scope.selectedRepositories = [];
 
       $scope.openConfirmRepoDeletionDialog = (size) => {
-        $modal.open({
+        $uibModal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteRepositoryController',

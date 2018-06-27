@@ -10,8 +10,8 @@ function maxTagsPerPage(numOfPages, tagsPerPage) {
  * Controller of the docker-registry-frontend
  */
 angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode-services'])
-  .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$modal', 'Blob',
-    ($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $modal, Blob) => {
+  .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$uibModal', 'Blob',
+    ($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $uibModal, Blob) => {
       $scope.$route = $route;
       $scope.$location = $location;
 
@@ -119,7 +119,7 @@ angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode
       };
 
       $scope.openConfirmTagDeletionDialog = (size) => {
-        $modal.open({
+        $uibModal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteTagsController',

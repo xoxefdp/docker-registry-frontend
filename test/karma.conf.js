@@ -26,6 +26,7 @@ module.exports = (config) => {
       'node_modules/angular-filter/dist/angular-filter.js',
       'node_modules/angular-loading-bar/src/loading-bar.js',
       'node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/moment/moment.js',
       'node_modules/angular-moment/angular-moment.js',
       'node_modules/angular-resource/angular-resource.js',
       'node_modules/angular-route/angular-route.js',
