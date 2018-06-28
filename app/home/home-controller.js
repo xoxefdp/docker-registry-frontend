@@ -9,6 +9,6 @@
  */
 angular.module('home-controller', ['app-mode-services'])
   .controller('HomeController', ['$scope', '$route', '$routeParams', '$location', 'AppMode',
-    ($scope, $route, $routeParams, $location, AppMode) => {
+    function ($scope, $route, $routeParams, $location, AppMode) {
       $scope.appMode = AppMode.query();
     }]);

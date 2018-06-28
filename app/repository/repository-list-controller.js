@@ -36,7 +36,7 @@ function buildQueryObject() {
  */
 angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'registry-services', 'app-mode-services'])
   .controller('RepositoryListController', ['$scope', '$route', '$location', '$uibModal', 'Repository', 'AppMode',
-    ($scope, $route, $location, $uibModal, Repository, AppMode) => {
+    function ($scope, $route, $location, $uibModal, Repository, AppMode) {
       $scope.appMode = AppMode.query();
 
       $scope.reposPerPage = getNumberOfReposPerPage($route.current.params) || $scope.reposPerPage;

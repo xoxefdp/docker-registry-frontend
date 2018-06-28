@@ -9,7 +9,7 @@
  */
 angular.module('repository-detail-controller', ['registry-services', 'app-mode-services'])
   .controller('RepositoryDetailController', ['$scope', '$route', '$routeParams', '$location', '$log', '$uibModal', 'Repository', 'AppMode',
-    ($scope, $route, $routeParams, $location, $log, $uibModal, Repository, AppMode) => {
+    function ($scope, $route, $routeParams, $location, $log, $uibModal, Repository, AppMode) {
       $scope.$route = $route;
       $scope.$location = $location;
       $scope.$routeParams = $routeParams;

@@ -9,7 +9,7 @@
  */
 angular.module('delete-tags-controller', ['registry-services'])
   .controller('DeleteTagsController', ['$scope', '$route', '$modalInstance', '$window', 'Manifest', 'items', 'information',
-    ($scope, $route, $modalInstance, $window, Manifest, items, information) => {
+    function ($scope, $route, $modalInstance, $window, Manifest, items, information) {
       $scope.items = items;
       $scope.information = information;
 

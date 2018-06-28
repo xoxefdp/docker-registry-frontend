@@ -9,7 +9,7 @@
  */
 angular.module('image-controller', ['registry-services', 'app-mode-services'])
   .controller('ImageController', ['$scope', '$route', '$routeParams', '$location', '$log', '$filter', 'Manifest', 'Blob', 'AppMode',
-    ($scope, $route, $routeParams, $location, $log, $filter, Manifest, Blob, AppMode) => {
+    function ($scope, $route, $routeParams, $location, $log, $filter, Manifest, Blob, AppMode) {
       $scope.appMode = AppMode.query();
       Manifest.query({ repository: $scope.repository, tagName: $scope.tagName })
         .$promise.then((data) => {

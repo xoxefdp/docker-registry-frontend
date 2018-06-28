@@ -9,7 +9,7 @@
  */
 angular.module('tag-item-controller', ['registry-services'])
   .controller('TagItemController', ['$scope', 'Image', 'Ancestry',
-    ($scope, Image, Ancestry) => {
+    function ($scope, Image, Ancestry) {
     // Assign details to "tag" variable in the parent scope
 
       $scope.tag.details = Image.query({ imageId: $scope.tag.imageId });

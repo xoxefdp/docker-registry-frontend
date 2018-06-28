@@ -11,7 +11,7 @@ function maxTagsPerPage(numOfPages, tagsPerPage) {
  */
 angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode-services'])
   .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$uibModal', 'Blob',
-    ($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $uibModal, Blob) => {
+    function ($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $uibModal, Blob) {
       $scope.$route = $route;
       $scope.$location = $location;
 

@@ -9,7 +9,7 @@
  */
 angular.module('delete-repository-controller', ['registry-services'])
   .controller('DeleteRepositoryController', ['$scope', '$route', '$modalInstance', '$window', 'Repository', 'items', 'information',
-    ($scope, $route, $modalInstance, $window, Repository, items, information) => {
+    function ($scope, $route, $modalInstance, $window, Repository, items, information) {
       $scope.items = items;
       $scope.information = information;
 
