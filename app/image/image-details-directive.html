@@ -10,9 +10,9 @@
 
 <uib-tabset>
   <uib-tab>
-    <tab-heading>
+    <uib-tab-heading>
       General information
-    </tab-heading>
+    </uib-tab-heading>
     <form class="form-horizontal"  role="form">
       <div class="form-group" ng-show="imageDetails.labels.maintainer || imageDetails.author">
         <label class="col-sm-2 control-label"><span class="glyphicon glyphicon-user"></span> Author</label>
@@ -87,9 +87,9 @@
     </form>
   </uib-tab>
   <uib-tab>
-    <tab-heading>
+    <uib-tab-heading>
       Labels
-    </tab-heading>
+    </uib-tab-heading>
       <table class="table">
         <thead>
           <tr>
@@ -106,9 +106,9 @@
       </table>
   </uib-tab>
   <uib-tab>
-    <tab-heading>
+    <uib-tab-heading>
       Dockerfile
-    </tab-heading>
+    </uib-tab-heading>
       <pre>
       <code ng-repeat="instruction in imageDetails.dockerfile track by $index">
       {{instruction}}

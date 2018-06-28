@@ -20,7 +20,7 @@ module.exports = (config) => {
     files: [
       'node_modules/angular/angular.js',
       'node_modules/angular-animate/angular-animate.js',
-      'node_modules/angular-ui-bootstrap/ui-bootstrap.js',
+      'node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
       'node_modules/angular-bootstrap-checkbox/angular-bootstrap-checkbox.js',
       'node_modules/angular-cookies/angular-cookies.js',
       'node_modules/angular-filter/dist/angular-filter.js',
