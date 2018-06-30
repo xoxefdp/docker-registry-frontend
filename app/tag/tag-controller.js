@@ -2,6 +2,13 @@ function maxTagsPerPage(numOfPages, tagsPerPage) {
   return parseInt(Math.ceil(parseFloat(numOfPages) / parseFloat(tagsPerPage)), 10);
 }
 
+function compare(a, b) {
+  const at = new Date(a.details.created);
+  const bt = new Date(b.details.created);
+
+  return at.getTime() - bt.getTime();
+}
+
 /**
  * @ngdoc function
  * @name docker-registry-frontend.controller:TagController
@@ -10,123 +17,121 @@ function maxTagsPerPage(numOfPages, tagsPerPage) {
  * Controller of the docker-registry-frontend
  */
 angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode-services'])
-  .controller('TagController', ['$scope', '$route', '$location', '$filter', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$uibModal', 'Blob',
-    function ($scope, $route, $location, $filter, Manifest, Tag, AppMode, filterFilter, $uibModal, Blob) {
-      $scope.$route = $route;
-      $scope.$location = $location;
+  .controller('TagController', ['$scope', '$route', '$location', 'Manifest', 'Tag', 'AppMode', 'filterFilter', '$uibModal', 'Blob', 'RegistryHost',
+    class TagController {
+      constructor($scope, $route, $location, Manifest, Tag, AppMode, filterFilter, $uibModal, Blob, RegistryHost) {
+        this.$route = $route;
+        this.$location = $location;
+        this.$uibModal = $uibModal;
+        this.filterFilter = filterFilter;
+        this.registryHost = RegistryHost.query();
 
-      $scope.searchName = $route.current.params.searchName;
-      $scope.repositoryUser = $route.current.params.repositoryUser;
-      $scope.repositoryName = $route.current.params.repositoryName;
+        this.searchName = $route.current.params.searchName;
+        this.repositoryUser = $route.current.params.repositoryUser;
+        this.repositoryName = $route.current.params.repositoryName;
 
-      if ($scope.repositoryUser == null || $scope.repositoryUser == 'undefined') {
-        $scope.repository = $scope.repositoryName;
-      } else {
-        $scope.repository = `${$scope.repositoryUser}/${$scope.repositoryName}`;
-      }
-      $scope.tagName = $route.current.params.tagName;
-      AppMode.query((result) => {
-        $scope.appMode = result;
-        $scope.tagsPerPage = $route.current.params.tagsPerPage || $scope.appMode.defaultTagsPerPage;
-        if ($scope.tagsPerPage === 'all') {
-          $scope.tagsPerPage = null;
-        }
-      });
+        // sort tags
+        this.orderByCreated = true;
 
-      // Fetch tags
-      Tag.query({
-        repoUser: $scope.repositoryUser,
-        repoName: $scope.repositoryName,
-      }).$promise.then((result) => {
-        $scope.tags = result;
-
-        // Determine the number of pages
-        $scope.maxTagsPage = maxTagsPerPage(result.length, $scope.tagsPerPage);
-        // Compute the right current page number
-        $scope.tagsCurrentPage = $route.current.params.tagPage;
-        if (!$scope.tagsCurrentPage) {
-          $scope.tagsCurrentPage = 1;
+        if (this.repositoryUser == null || this.repositoryUser == 'undefined') {
+          this.repository = this.repositoryName;
         } else {
-          $scope.tagsCurrentPage = parseInt($scope.tagsCurrentPage, 10);
-          if ($scope.tagsCurrentPage > $scope.maxTagsPage || $scope.tagsCurrentPage < 1) {
-            $scope.tagsCurrentPage = 1;
-          }
+          this.repository = `${this.repositoryUser}/${this.repositoryName}`;
         }
-        // Select wanted tags
-        let idxShift = 0;
-        // Copy collection for rendering in a smart-table
-        $scope.displayedTags = [].concat($scope.tags);
-
-        if ($scope.tagsPerPage) {
-          idxShift = ($scope.tagsCurrentPage - 1) * $scope.tagsPerPage;
-          $scope.displayedTags = $scope.displayedTags.slice(idxShift, ($scope.tagsCurrentPage) * $scope.tagsPerPage);
-        }
-
-        // Fetch wanted manifests
-        $scope.displayedTags.forEach((tag) => {
-          if (Object.prototype.hasOwnProperty.call(tag, 'name')) {
-            Manifest.query({ repository: $scope.repository, tagName: tag.name })
-              .$promise.then((data) => {
-                tag.details = angular.copy(data);
-                return !data.isSchemaV2
-                  ? undefined
-                  : Blob.query({ repository: $scope.repository, digest: `sha256:${data.id}` })
-                    .$promise.then((config) => {
-                      const labels = config.container_config && config.container_config.Labels;
-                      tag.details.created = config.created;
-                      tag.details.docker_version = config.docker_version;
-                      tag.details.os = config.os;
-                      tag.details.architecture = config.architecture;
-                      tag.details.labels = labels;
-                      tag.details.dockerfile = config.dockerfile;
-                      tag.details.layers = config.dockerfile.length;
-                    });
-              });
+        this.tagName = $route.current.params.tagName;
+        AppMode.query((result) => {
+          this.appMode = result;
+          this.tagsPerPage = $route.current.params.tagsPerPage || this.appMode.defaultTagsPerPage;
+          if (this.tagsPerPage === 'all') {
+            this.tagsPerPage = null;
           }
         });
 
-        $scope.$watch('displayedTags|filter:{selected:true}', (nv) => {
-          $scope.selection = nv.map(tag => `${$scope.repository}:${tag.name}`);
-        }, true);
-      });
+        // Fetch tags
+        Tag.query({
+          repoUser: this.repositoryUser,
+          repoName: this.repositoryName,
+        }).$promise.then((result) => {
+          this.tags = result;
 
-      // selected tags
-      $scope.selection = [];
+          // Determine the number of pages
+          this.maxTagsPage = maxTagsPerPage(result.length, this.tagsPerPage);
+          // Compute the right current page number
+          this.tagsCurrentPage = $route.current.params.tagPage;
+          if (!this.tagsCurrentPage) {
+            this.tagsCurrentPage = 1;
+          } else {
+            this.tagsCurrentPage = parseInt(this.tagsCurrentPage, 10);
+            if (this.tagsCurrentPage > this.maxTagsPage || this.tagsCurrentPage < 1) {
+              this.tagsCurrentPage = 1;
+            }
+          }
+          // Select wanted tags
+          let idxShift = 0;
+          // Copy collection for rendering in a smart-table
+          this.displayedTags = [].concat(this.tags);
 
-      // helper method to get selected tags
-      $scope.selectedTags = () => (
-        filterFilter($scope.displayedTags, { selected: true })
-      );
+          if (this.tagsPerPage) {
+            idxShift = (this.tagsCurrentPage - 1) * this.tagsPerPage;
+            this.displayedTags = this.displayedTags.slice(idxShift, (this.tagsCurrentPage) * this.tagsPerPage);
+          }
 
-      // sort tags
-      $scope.orderByCreated = true;
+          // Fetch wanted manifests
+          this.displayedTags.forEach((tag) => {
+            if (Object.prototype.hasOwnProperty.call(tag, 'name')) {
+              Manifest.query({ repository: this.repository, tagName: tag.name })
+                .$promise.then((data) => {
+                  tag.details = angular.copy(data);
+                  return !data.isSchemaV2
+                    ? undefined
+                    : Blob.query({ repository: this.repository, digest: `sha256:${data.id}` })
+                      .$promise.then((config) => {
+                        const labels = config.container_config && config.container_config.Labels;
+                        tag.details.created = config.created;
+                        tag.details.docker_version = config.docker_version;
+                        tag.details.os = config.os;
+                        tag.details.architecture = config.architecture;
+                        tag.details.labels = labels;
+                        tag.details.dockerfile = config.dockerfile;
+                        tag.details.layers = config.dockerfile.length;
+                      });
+                });
+            }
+          });
 
-      function compare(a, b) {
-        const at = new Date(a.details.created);
-        const bt = new Date(b.details.created);
+          $scope.$watch(() => this.displayedTags.filter(t => t.selected), (nv) => {
+            this.selection = nv.map(tag => `${this.repository}:${tag.name}`);
+          }, true);
+        });
 
-        return at.getTime() - bt.getTime();
+        // selected tags
+        this.selection = [];
       }
 
-      $scope.sortTags = () => {
-        if ($scope.orderByCreated) {
-          $scope.displayedTags.sort(compare);
+      // helper method to get selected tags
+      selectedTags() {
+        return this.filterFilter(this.displayedTags, { selected: true });
+      }
+
+      sortTags() {
+        if (this.orderByCreated) {
+          this.displayedTags.sort(compare);
         } else {
-          $scope.displayedTags.sort(compare).reverse();
+          this.displayedTags.sort(compare).reverse();
         }
 
-        $scope.orderByCreated = !$scope.orderByCreated;
-      };
+        this.orderByCreated = !this.orderByCreated;
+      }
 
-      $scope.openConfirmTagDeletionDialog = (size) => {
-        $uibModal.open({
+      openConfirmTagDeletionDialog(size) {
+        this.$uibModal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteTagsController',
           size,
           resolve: {
             items() {
-              return $scope.selection;
+              return this.selection;
             },
             information() {
               return `A tag is basically a reference to an image.
@@ -138,5 +143,5 @@ angular.module('tag-controller', ['ui.bootstrap', 'registry-services', 'app-mode
             },
           },
         });
-      };
+      }
     }]);

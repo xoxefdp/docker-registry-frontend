@@ -27,6 +27,11 @@ function mockAppMode($httpBackend) {
   $httpBackend.expectGET('app-mode.json').respond(expectedAppMode);
 }
 
+function mockRegistryHost($httpBackend) {
+  const expectedRegistryHost = { host: 'path-to-your-registry', port: 80 };
+  $httpBackend.expectGET('registry-host.json').respond(expectedRegistryHost);
+}
+
 describe('TagController', () => {
   // load the controller's module
   beforeEach(module('tag-controller'));
@@ -48,11 +53,13 @@ describe('TagController', () => {
       const $scope = $rootScope.$new();
       const route = buildRoute();
       const mockTag = mockTagService($q);
+
+      mockRegistryHost($httpBackend);
       mockAppMode($httpBackend);
 
-      $controller('TagController', { $scope, $route: route, Tag: mockTag });
-      // $httpBackend.flush();
-      $scope.displayedTags = [{
+      const controller = $controller('TagController', { $scope, $route: route, Tag: mockTag });
+      $httpBackend.flush();
+      controller.displayedTags = [{
         name: 'aaa',
         details: {
           created: '2015-03-25',
@@ -63,10 +70,10 @@ describe('TagController', () => {
           created: '2015-03-20',
         },
       }];
-      expect($scope.orderByCreated).toBeTruthy();
+      expect(controller.orderByCreated).toBeTruthy();
 
-      $scope.sortTags();
-      expect($scope.displayedTags).toEqual([{
+      controller.sortTags();
+      expect(controller.displayedTags).toEqual([{
         name: 'bbb',
         details: {
           created: '2015-03-20',
@@ -77,18 +84,20 @@ describe('TagController', () => {
           created: '2015-03-25',
         },
       }]);
-      expect($scope.orderByCreated).toBeFalsy();
+      expect(controller.orderByCreated).toBeFalsy();
     });
 
     it('should sort tags Descending', () => {
       const $scope = $rootScope.$new();
       const route = buildRoute();
       const mockTag = mockTagService($q);
+
+      mockRegistryHost($httpBackend);
       mockAppMode($httpBackend);
 
-      $controller('TagController', { $scope, $route: route, Tag: mockTag });
+      const controller = $controller('TagController', { $scope, $route: route, Tag: mockTag });
       $httpBackend.flush();
-      $scope.displayedTags = [{
+      controller.displayedTags = [{
         name: 'aaa',
         details: {
           created: '2015-03-25',
@@ -99,11 +108,11 @@ describe('TagController', () => {
           created: '2015-03-20',
         },
       }];
-      $scope.orderByCreated = false;
-      expect($scope.orderByCreated).toBeFalsy();
+      controller.orderByCreated = false;
+      expect(controller.orderByCreated).toBeFalsy();
 
-      $scope.sortTags();
-      expect($scope.displayedTags).toEqual([{
+      controller.sortTags();
+      expect(controller.displayedTags).toEqual([{
         name: 'aaa',
         details: {
           created: '2015-03-25',
@@ -114,7 +123,7 @@ describe('TagController', () => {
           created: '2015-03-20',
         },
       }]);
-      expect($scope.orderByCreated).toBeTruthy();
+      expect(controller.orderByCreated).toBeTruthy();
     });
   });
 });

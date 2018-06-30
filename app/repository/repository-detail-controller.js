@@ -8,53 +8,56 @@
  * Controller of the docker-registry-frontend
  */
 angular.module('repository-detail-controller', ['registry-services', 'app-mode-services'])
-  .controller('RepositoryDetailController', ['$scope', '$route', '$routeParams', '$location', '$log', '$uibModal', 'Repository', 'AppMode',
-    function ($scope, $route, $routeParams, $location, $log, $uibModal, Repository, AppMode) {
-      $scope.$route = $route;
-      $scope.$location = $location;
-      $scope.$routeParams = $routeParams;
+  .controller('RepositoryDetailController', ['$route', '$routeParams', '$location', '$log', '$uibModal', 'AppMode',
+    class RepositoryDetailController {
+      constructor($route, $routeParams, $location, $log, $uibModal, AppMode) {
+        this.$route = $route;
+        this.$location = $location;
+        this.$routeParams = $routeParams;
+        this.$uibModal = $uibModal;
 
-      // $scope.searchTerm = $route.current.params.searchTerm;
-      $scope.repositoryUser = $route.current.params.repositoryUser;
-      $scope.repositoryName = $route.current.params.repositoryName;
-      $log.log(`repository-detail-controller: $scope.repositoryUser = ${$scope.repositoryUser}`);
-      if ($scope.repositoryUser == null || $scope.repositoryUser == 'undefined') {
-        $scope.repository = $scope.repositoryName;
-        $log.log(`repository-detail-controller: $scope.repositoryUser was undefined; setting repository to just repositoryName = ${$scope.repository}`);
-      } else {
-        $scope.repository = `${$scope.repositoryUser}/${$scope.repositoryName}`;
-        $log.log(`repository-detail-controller: $scope.repositoryUser was NOT undefined; setting repository to ${$scope.repository}`);
+        // this.searchTerm = $route.current.params.searchTerm;
+        this.repositoryUser = $route.current.params.repositoryUser;
+        this.repositoryName = $route.current.params.repositoryName;
+        $log.log(`repository-detail-controller: this.repositoryUser = ${this.repositoryUser}`);
+        if (this.repositoryUser == null || this.repositoryUser == 'undefined') {
+          this.repository = this.repositoryName;
+          $log.log(`repository-detail-controller: this.repositoryUser was undefined; setting repository to just repositoryName = ${this.repository}`);
+        } else {
+          this.repository = `${this.repositoryUser}/${this.repositoryName}`;
+          $log.log(`repository-detail-controller: this.repositoryUser was NOT undefined; setting repository to ${this.repository}`);
+        }
+
+        this.appMode = AppMode.query();
+        this.maxTagsPage = undefined;
+        this.selectedRepositories = [];
       }
 
-      $scope.appMode = AppMode.query();
-      $scope.maxTagsPage = undefined;
-
       // Method used to disable next & previous links
-      $scope.getNextHref = () => {
-        if ($scope.maxTagsPage > $scope.tagsCurrentPage) {
-          const nextPageNumber = $scope.tagsCurrentPage + 1;
-          return `/repository/${$scope.repository}?tagsPerPage=${$scope.tagsPerPage}&tagPage=${nextPageNumber}`;
+      getNextHref() {
+        if (this.maxTagsPage > this.tagsCurrentPage) {
+          const nextPageNumber = this.tagsCurrentPage + 1;
+          return `/repository/${this.repository}?tagsPerPage=${this.tagsPerPage}&tagPage=${nextPageNumber}`;
         }
         return '#';
-      };
-      $scope.getFirstHref = () => {
-        if ($scope.tagsCurrentPage > 1) {
-          return `/repository/${$scope.repository}?tagsPerPage=${$scope.tagsPerPage}`;
-        }
-        return '#';
-      };
-      // selected repos
-      $scope.selectedRepositories = [];
+      }
 
-      $scope.openConfirmRepoDeletionDialog = (size) => {
-        $uibModal.open({
+      getFirstHref() {
+        if (this.tagsCurrentPage > 1) {
+          return `/repository/${this.repository}?tagsPerPage=${this.tagsPerPage}`;
+        }
+        return '#';
+      }
+
+      openConfirmRepoDeletionDialog(size) {
+        this.$uibModal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteRepositoryController',
           size,
           resolve: {
             items() {
-              return $scope.selectedRepositories;
+              return this.selectedRepositories;
             },
             information() {
               return `A repository is a collection of tags.
@@ -67,5 +70,5 @@ angular.module('repository-detail-controller', ['registry-services', 'app-mode-s
             },
           },
         });
-      };
+      }
     }]);

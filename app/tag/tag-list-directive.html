@@ -1,5 +1,5 @@
 <!-- Maybe put this into its own directive? -->
-<button type="button" ng-disabled="!selection.length" ng-click="openConfirmTagDeletionDialog()" class="btn btn-danger" ng-hide="appMode.browseOnly">
+<button type="button" ng-disabled="!selection.length" ng-click="tag.openConfirmTagDeletionDialog()" class="btn btn-danger" ng-hide="tag.appMode.browseOnly">
   <span class="glyphicon glyphicon-trash"></span>
   <ng-pluralize count="selection.length"
                when="{'0': 'Select tags to delete', 'one': 'Delete one tag', 'other': 'Delete {} tags'}">
@@ -10,10 +10,10 @@
   <table  class="table table-hover">
     <thead>
       <tr>
-        <th ng-hide="appMode.browseOnly"></th>
+        <th ng-hide="tag.appMode.browseOnly"></th>
         <th ng-class="{strike: deleted}"><span class="glyphicon glyphicon-tag"></span> Tag</th>
         <th ><span class="glyphicon glyphicon-qrcode"></span> Image ID</th>
-        <th role="button" ng-click="sortTags()" ng-class="{dropup: orderByCreated==true, dropdown: orderByCreated==false}">
+        <th role="button" ng-click="tag.sortTags()" ng-class="{dropup: orderByCreated==true, dropdown: orderByCreated==false}">
           <span class="glyphicon glyphicon-calendar"></span>
           Created
           <span class="caret"></span>
@@ -24,24 +24,24 @@
         <!-- <th><span class="glyphicon glyphicon-compressed"></span> Size (MB)</th> -->
       </tr>
       <tr>
-        <th ng-hide="appMode.browseOnly"></th>
+        <th ng-hide="tag.appMode.browseOnly"></th>
         <th>
           <input class="input-sm form-control" placeholder="Filter tags on this page" type="search" ng-model="search.name"/>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="tag in displayedTags | filter:search " ng-show="tag.details" ng-class="{warning: tag.selected}">
-        <td ng-hide="appMode.browseOnly">
-          <checkbox name="selection[]" value="{{repository}}:{{tag.name}}" ng-model="tag.selected"></checkbox>
+      <tr ng-repeat="t in tag.displayedTags | filter:search " ng-show="t.details" ng-class="{warning: t.selected}">
+        <td ng-hide="tag.appMode.browseOnly">
+          <checkbox name="selection[]" value="{{tag.repository}}:{{t.name}}" ng-model="t.selected"></checkbox>
         </td>
         <td class="grow">
-          <a ng-bind-html="tag.name" href="tag/{{repository}}/{{tag.name}}">{{tag.name}}</a>
+          <a ng-bind-html="t.name" href="tag/{{tag.repository}}/{{t.name}}">{{t.name}}</a>
         </td>
-        <td><span ng-bind-html="tag.details.id | limitTo: 12"></span></td>
-        <td am-time-ago="tag.details.created"></td>
-        <td><span ng-bind-html="(tag.details.labels.maintainer || tag.details.author) | linky"></span></td>
-        <td ng-bind-html="tag.details.docker_version"></td>
+        <td><span ng-bind-html="t.details.id | limitTo: 12"></span></td>
+        <td am-time-ago="t.details.created"></td>
+        <td><span ng-bind-html="(t.details.labels.maintainer || t.details.author) | linky"></span></td>
+        <td ng-bind-html="t.details.docker_version"></td>
         <!-- <td><span ng-bind-html="tag.details.parent | limitTo: 12"></span></td> -->
         <!-- <td>
           <button type="submit" class="btn btn-info btn-xs" ng-click="calculateTotalImageSize()" ng-show="totalImageSize===null" title="Calculate total image size">

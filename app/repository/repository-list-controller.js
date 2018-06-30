@@ -36,59 +36,72 @@ function buildQueryObject() {
  */
 angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'registry-services', 'app-mode-services'])
   .controller('RepositoryListController', ['$scope', '$route', '$location', '$uibModal', 'Repository', 'AppMode',
-    function ($scope, $route, $location, $uibModal, Repository, AppMode) {
-      $scope.appMode = AppMode.query();
+    class RepositoryListController {
+      constructor($scope, $route, $location, $uibModal, Repository, AppMode) {
+        this.appMode = AppMode.query();
 
-      $scope.reposPerPage = getNumberOfReposPerPage($route.current.params) || $scope.reposPerPage;
-      $scope.currentLastRepository = getCurrentLastRepository($route.current.params);
-      const queryObject = buildQueryObject.call($scope);
+        this.$location = $location;
+        this.$uibModal = $uibModal;
+        // this.filterFilter = filterFilter;
 
-      $scope.repositories = Repository.query(queryObject);
+        this.reposPerPage = getNumberOfReposPerPage($route.current.params) || this.reposPerPage;
+        this.currentLastRepository = getCurrentLastRepository($route.current.params);
+        const queryObject = buildQueryObject.call(this);
 
-      // selected repos
-      $scope.selectedRepositories = [];
+        // this.repositories = { repos: [] };
+        this.repositories = Repository.query(queryObject);
+
+        // selected repos
+        this.selectedRepositories = [];
+
+        // Watch repos for changes
+        // To watch for changes on a property inside the object "repositories"
+        // we first have to make sure the promise is ready.
+        this.repositories.$promise.then((data) => {
+          this.repositories = data;
+
+          this.isLastPage = !data.lastRepository;
+          this.isFirstPage = !this.currentLastRepository;
+          // $scope.$watch('repositories.repos|filter:{selected:true}', (nv) => {
+          //   this.selectedRepositories = nv.map(repo => repo.name);
+          // }, true);
+
+          $scope.$watch(() => this.repositories.repos.filter(r => r.selected), (nv) => {
+            this.selectedRepositories = nv.map(repo => repo.name);
+          }, true);
+        });
+      }
 
       // helper method to get selected tags
-      $scope.selectedRepos = () => filterFilter($scope.repositories.repos, { selected: true });
+      selectedRepos() {
+        return this.filterFilter(this.repositories.repos, { selected: true });
+      }
 
-      $scope.page = (num) => {
-        $location.path(`repositories/${num}/${$scope.currentLastRepository}`);
-      };
+      page(num) {
+        this.$location.path(`repositories/${num}/${this.currentLastRepository}`);
+      }
 
-      $scope.nextPage = () => {
-        if (!$scope.isLastPage) {
-          $location.path(`/repositories/${$scope.reposPerPage}/${$scope.repositories.lastRepository}`);
+      nextPage() {
+        if (!this.isLastPage) {
+          this.$location.path(`/repositories/${this.reposPerPage}/${this.repositories.lastRepository}`);
         }
-      };
+      }
 
-      $scope.previousPage = () => {
-        if (!$scope.isFirstPage) {
-          $location.path(`repositories/${$scope.reposPerPage}`);
+      previousPage() {
+        if (!this.isFirstPage) {
+          this.$location.path(`repositories/${this.reposPerPage}`);
         }
-      };
+      }
 
-      // Watch repos for changes
-      // To watch for changes on a property inside the object "repositories"
-      // we first have to make sure the promise is ready.
-      $scope.repositories.$promise.then((data) => {
-        $scope.repositories = data;
-
-        $scope.isLastPage = !data.lastRepository;
-        $scope.isFirstPage = !$scope.currentLastRepository;
-        $scope.$watch('repositories.repos|filter:{selected:true}', (nv) => {
-          $scope.selectedRepositories = nv.map(repo => repo.name);
-        }, true);
-      });
-
-      $scope.openConfirmRepoDeletionDialog = (size) => {
-        $uibModal.open({
+      openConfirmRepoDeletionDialog(size) {
+        this.$uibModal.open({
           animation: true,
           templateUrl: 'modalConfirmDeleteItems.html',
           controller: 'DeleteRepositoryController',
           size,
           resolve: {
             items() {
-              return $scope.selectedRepositories;
+              return this.selectedRepositories;
             },
             information() {
               return `A repository is a collection of tags.
@@ -101,5 +114,5 @@ angular.module('repository-list-controller', ['ngRoute', 'ui.bootstrap', 'regist
             },
           },
         });
-      };
+      }
     }]);

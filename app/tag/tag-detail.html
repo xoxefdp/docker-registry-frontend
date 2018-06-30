@@ -1,21 +1,21 @@
 <ol class="breadcrumb">
     <li><a href="home">Home</a></li>
     <li><a href="repositories/">Repositories</a></li>
-    <li ng-show="repositoryUser"><a href="repositories/{{repositoryUser}}">{{repositoryUser}}</a></li>
-    <li><a href="repository/{{repository}}">{{repositoryName}}</a></li>
-    <li><a href="tag/{{repository}}/{{tagName}}">{{tagName}}</a></li>
+    <li ng-show="repositoryUser"><a href="repositories/{{tag.repositoryUser}}">{{tag.repositoryUser}}</a></li>
+    <li><a href="repository/{{tag.repository}}">{{tag.repositoryName}}</a></li>
+    <li><a href="tag/{{tag.repository}}/{{tag.tagName}}">{{tag.tagName}}</a></li>
 </ol>
 
 <h1>
   Details for tag
-  <span ng-show="repositoryUser"><a href="repositories/{{repositoryUser}}">{{repositoryUser}}</a></span> /
-  <span ng-show="repositoryUser"><a href="repository/{{repositoryUser}}/{{repositoryName}}">{{repositoryName}}</a></span>
-  <span ng-hide="repositoryUser"><a href="repository/{{repositoryName}}">{{repositoryName}}</a></span> :
-  <span ng-show="repositoryUser"><a href="tag/{{repositoryUser}}/{{repositoryName}}/{{tagName}}">{{tagName}}</a></span>
-  <span ng-hide="repositoryUser"><a href="tag/{{repositoryName}}/{{tagName}}">{{tagName}}</a></span>
+  <span ng-show="tag.repositoryUser"><a href="repositories/{{tag.repositoryUser}}">{{tag.repositoryUser}}</a></span> /
+  <span ng-show="tag.repositoryUser"><a href="repository/{{tag.repositoryUser}}/{{tag.repositoryName}}">{{tag.repositoryName}}</a></span>
+  <span ng-hide="tag.repositoryUser"><a href="repository/{{tag.repositoryName}}">{{tag.repositoryName}}</a></span> :
+  <span ng-show="tag.repositoryUser"><a href="tag/{{tag.repositoryUser}}/{{tag.repositoryName}}/{{tag.tagName}}">{{tag.tagName}}</a></span>
+  <span ng-hide="tag.repositoryUser"><a href="tag/{{tag.repositoryName}}/{{tag.tagName}}">{{tag.tagName}}</a></span>
 
-  <div ng-hide="appMode.browseOnly" class="pull-right">
-    <button type="button" ng-click="selection=['{{repository}}:{{tagName}}']; openConfirmTagDeletionDialog()" class="btn btn-danger">
+  <div ng-hide="tag.appMode.browseOnly" class="pull-right">
+    <button type="button" ng-click="selection=['{{tag.repository}}:{{tag.tagName}}']; tag.openConfirmTagDeletionDialog()" class="btn btn-danger">
       <span class="glyphicon glyphicon-trash"></span> Delete Tag
     </button>
   </div>
@@ -23,7 +23,7 @@
 </h1>
 
 <div class="well"><code>
-  docker pull {{registryHost.host}}<span ng-if="registryHost.port != 80 && registryHost.port != 443">:{{registryHost.port}}</span>/{{repository}}:{{tagName}}
+  docker pull {{tag.registryHost.host}}<span ng-if="tag.registryHost.port != 80 && tag.registryHost.port != 443">:{{tag.registryHost.port}}</span>/{{tag.repository}}:{{tag.tagName}}
 </code></div>
 
 <image-details></image-details>

@@ -8,29 +8,31 @@
  * Every item in the tag list is associated with a TagItemController
  */
 angular.module('tag-item-controller', ['registry-services'])
-  .controller('TagItemController', ['$scope', 'Image', 'Ancestry',
-    function ($scope, Image, Ancestry) {
-    // Assign details to "tag" variable in the parent scope
+  .controller('TagItemController', ['Image', 'Ancestry',
+    class TagItemController {
+      constructor(Image, Ancestry) {
+        // Assign details to "tag" variable in the parent scope
+        this.tag.details = Image.query({ imageId: this.tag.imageId });
 
-      $scope.tag.details = Image.query({ imageId: $scope.tag.imageId });
+        this.totalImageSize = null;
+        this.Ancestry = Ancestry;
+        this.Image = Image;
+      }
 
       /**
-     * Calculates the total download size for the image based on
-     * it's ancestry.
-     */
-      $scope.totalImageSize = null;
-      $scope.calculateTotalImageSize = () => {
-      /* Fetch the image's ancestry and when complete, fetch the size of each image */
-
-        Ancestry.query({ imageId: $scope.tag.imageId }).$promise.then((result) => {
-          $scope.totalImageSize = 0;
+       * Calculates the total download size for the image based on
+       * it's ancestry.
+       */
+      calculateTotalImageSize() {
+        // Fetch the image's ancestry and when complete, fetch the size of each image
+        this.Ancestry.query({ imageId: this.tag.imageId }).$promise.then((result) => {
+          this.totalImageSize = 0;
 
           angular.forEach(result, (id) => {
-          /* We have to use the $promise object here to be sure the result is accessible */
-
-            Image.get({ imageId: id }).$promise.then((image) => {
+          // We have to use the $promise object here to be sure the result is accessible
+            this.Image.get({ imageId: id }).$promise.then((image) => {
               if (!isNaN(image.Size - 0)) {
-                $scope.totalImageSize += image.Size;
+                this.totalImageSize += image.Size;
               }
             });
           });

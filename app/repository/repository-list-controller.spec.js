@@ -42,14 +42,14 @@ describe('RepositoryListController', () => {
     };
     $httpBackend.expectGET('app-mode.json').respond(expectedAppMode);
 
-    $controller('RepositoryListController', { $scope, $route: route, Repository: mockRepository });
+    const controller = $controller('RepositoryListController', { $scope, $route: route, Repository: mockRepository });
     $httpBackend.flush();
 
-    expect($scope.reposPerPage).toBe(10);
-    expect($scope.currentLastRepository).toEqual('lastNamespace\\lastRepository');
-    expect($scope.selectedRepositories).toEqual(['name']);
+    expect(controller.reposPerPage).toBe(10);
+    expect(controller.currentLastRepository).toEqual('lastNamespace\\lastRepository');
+    expect(controller.selectedRepositories).toEqual(['name']);
     expect(mockRepository.query).toHaveBeenCalled();
-    expect($scope.repositories).toEqual(mockRepositoryReturnValue);
+    expect(controller.repositories).toEqual(mockRepositoryReturnValue);
   });
 });
 

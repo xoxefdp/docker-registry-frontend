@@ -8,33 +8,37 @@
  * Controller of the docker-registry-frontend
  */
 angular.module('delete-tags-controller', ['registry-services'])
-  .controller('DeleteTagsController', ['$scope', '$route', '$modalInstance', '$window', 'Manifest', 'items', 'information',
-    function ($scope, $route, $modalInstance, $window, Manifest, items, information) {
-      $scope.items = items;
-      $scope.information = information;
+  .controller('DeleteTagsController', ['$modalInstance', '$window', 'Manifest', 'items', 'information',
+    class DeleteTagsController {
+      constructor($modalInstance, $window, Manifest, items, information) {
+        this.items = items;
+        this.information = information;
+        this.$modalInstance = $modalInstance;
+        this.$window = $window;
+        this.Manifest = Manifest;
+      }
 
-      // Callback that triggers deletion of tags and reloading of page
-      $scope.ok = () => {
-        angular.forEach($scope.items, (value) => {
+      ok() {
+        angular.forEach(this.items, (value) => {
           const repository = value.split(':')[0];
           const tagName = value.split(':')[1];
 
-          Manifest.query({
+          this.Manifest.query({
             repository,
             tagName,
           }).$promise.then((data) => {
-            Manifest.delete({
+            this.Manifest.delete({
               repository,
               digest: data.digest,
             }).$promise.then(() => {
-              $window.location.href = `/repository/${repository}`;
+              this.$window.location.href = `/repository/${repository}`;
             });
           });
         });
-        $modalInstance.close();
-      };
+        this.$modalInstance.close();
+      }
 
-      $scope.cancel = () => {
-        $modalInstance.dismiss('cancel');
-      };
+      cancel() {
+        this.$modalInstance.dismiss('cancel');
+      }
     }]);

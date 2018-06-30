@@ -53,34 +53,34 @@ angular
       $routeProvider
         .when('/home', {
           templateUrl: 'home.html',
-          controller: 'HomeController',
+          controller: 'HomeController as home',
         })
         .when('/repositories/:reposPerPage?/:lastNamespace?/:lastRepository?', {
           templateUrl: 'repository/repository-list.html',
-          controller: 'RepositoryListController',
+          controller: 'RepositoryListController as repositories',
         })
         .when('/repository/:repositoryUser/:repositoryName', {
           templateUrl: 'repository/repository-detail.html',
-          controller: 'RepositoryDetailController',
+          controller: 'RepositoryDetailController as repository',
         })
         .when('/repository/:repositoryName', {
           templateUrl: 'repository/repository-detail.html',
-          controller: 'RepositoryDetailController',
+          controller: 'RepositoryDetailController as repository',
         })
         .when('/about', {
           templateUrl: 'about.html',
         })
         .when('/tag/:repositoryUser?/:repositoryName/:tagName/', {
           templateUrl: 'tag/tag-detail.html',
-          controller: 'TagController',
+          controller: 'TagController as tag',
         })
         .when('/image/:imageId', {
           templateUrl: 'tag/image-detail.html',
-          controller: 'ImageController',
+          controller: 'ImageController as image',
         })
         .when('/image/:imageId/tag/:repositoryUser?/:repositoryName?', {
           templateUrl: 'tag/create-tag.html',
-          controller: 'CreateTagController',
+          controller: 'CreateTagController as tag',
         })
         .otherwise({
           redirectTo: '/repositories/20',

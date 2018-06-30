@@ -8,7 +8,9 @@
  * Controller of the docker-registry-frontend
  */
 angular.module('home-controller', ['app-mode-services'])
-  .controller('HomeController', ['$scope', '$route', '$routeParams', '$location', 'AppMode',
-    function ($scope, $route, $routeParams, $location, AppMode) {
-      $scope.appMode = AppMode.query();
+  .controller('HomeController', ['AppMode',
+    class HomeController {
+      constructor(AppMode) {
+        this.appMode = AppMode.query();
+      }
     }]);

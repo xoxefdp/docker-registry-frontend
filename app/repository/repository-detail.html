@@ -1,15 +1,15 @@
 <ol class="breadcrumb">
     <li><a href="home">Home</a></li>
     <li><a href="repositories/">Repositories</a></li>
-    <li ng-show="repositoryUser"><a href="repositories/{{repositoryUser}}">{{repositoryUser}}</a></li>
-    <li><a href="repository/{{repository}}">{{repositoryName}}</a></li>
+    <li ng-show="repositoryUser"><a href="repositories/{{repository.repositoryUser}}">{{repository.repositoryUser}}</a></li>
+    <li><a href="repository/{{repository.repository}}">{{repository.repositoryName}}</a></li>
 </ol>
 
 <h1>
-  Details for repository: {{repository}}
-  <div ng-hide="appMode.browseOnly" class="pull-right">
+  Details for repository: {{repository.repository}}
+  <div ng-hide="repository.appMode.browseOnly" class="pull-right">
     <!-- Maybe put this into its own directive? -->
-    <button type="button" ng-click="selectedRepositories=['{{repositoryUser}}/{{repositoryName}}']; openConfirmRepoDeletionDialog()" class="btn btn-danger" ng-hide="appMode.browseOnly">
+    <button type="button" ng-click="selectedRepositories=['{{repository.repositoryUser}}/{{repository.repositoryName}}']; repository.openConfirmRepoDeletionDialog()" class="btn btn-danger" ng-hide="repository.appMode.browseOnly">
       <span class="glyphicon glyphicon-trash"></span> Delete Repository
     </button>
 
@@ -24,8 +24,8 @@
 <tag-list></tag-list>
 <nav>
   <ul class="pager">
-    <li class="previous" ng-class="{disabled: tagsCurrentPage <= 1}">
-      <a href="{{getFirstHref()}}"  >
+    <li class="previous" ng-class="{disabled: repository.tagsCurrentPage <= 1}">
+      <a href="{{repository.getFirstHref()}}"  >
         <span aria-hidden="true">&larr;</span>
         First Page
       </a>
@@ -34,24 +34,24 @@
       <div class="btn-group" role="group">
         <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
           <span class="glyphicon glyphicon-book" aria-hidden="true"> </span> / page:
-          <span ng-show="tagsPerPage">{{tagsPerPage}}</span>
-          <span ng-show="!tagsPerPage">all</span>
+          <span ng-show="repository.tagsPerPage">{{repository.tagsPerPage}}</span>
+          <span ng-show="!repository.tagsPerPage">all</span>
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="repository/{{repository}}?tagsPerPage=all">Show all</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=all">Show all</a></li>
           <li role="separator" class="divider"></li>
-          <li><a href="repository/{{repository}}?tagsPerPage=10">10</a></li>
-          <li><a href="repository/{{repository}}?tagsPerPage=20">20</a></li>
-          <li><a href="repository/{{repository}}?tagsPerPage=40">40</a></li>
-          <li><a href="repository/{{repository}}?tagsPerPage=60">60</a></li>
-          <li><a href="repository/{{repository}}?tagsPerPage=80">80</a></li>
-          <li><a href="repository/{{repository}}?tagsPerPage=100">100</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=10">10</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=20">20</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=40">40</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=60">60</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=80">80</a></li>
+          <li><a href="repository/{{repository.repository}}?tagsPerPage=100">100</a></li>
         </ul>
       </div>
     </li>
-    <li class="next" ng-class="{disabled: maxTagsPage <= tagsCurrentPage || !tagsPerPage}">
-      <a  href="{{getNextHref()}}">
+    <li class="next" ng-class="{disabled: repository.maxTagsPage <= repository.tagsCurrentPage || !repository.tagsPerPage}">
+      <a  href="{{repository.getNextHref()}}">
         Next <span aria-hidden="true">&rarr;</span>
       </a>
     </li>
