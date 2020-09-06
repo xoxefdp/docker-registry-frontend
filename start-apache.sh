@@ -37,8 +37,6 @@ echo "{\"host\": \"$ENV_REGISTRY_PROXY_FQDN\", \"port\": $ENV_REGISTRY_PROXY_POR
 
 # information about browse mode.
 [[ x$ENV_MODE_BROWSE_ONLY =~ ^x(true|false)$ ]] || ENV_MODE_BROWSE_ONLY=false
-# Overwrite browse-only option for now since only browse-only is working right now
-ENV_MODE_BROWSE_ONLY=true
 [[ -z "$ENV_DEFAULT_REPOSITORIES_PER_PAGE" ]] && ENV_DEFAULT_REPOSITORIES_PER_PAGE=20
 [[ -z "$ENV_DEFAULT_TAGS_PER_PAGE" ]] && ENV_DEFAULT_TAGS_PER_PAGE=10
 echo "{\"browseOnly\":$ENV_MODE_BROWSE_ONLY, \"defaultRepositoriesPerPage\":$ENV_DEFAULT_REPOSITORIES_PER_PAGE , \"defaultTagsPerPage\":$ENV_DEFAULT_TAGS_PER_PAGE }"  > /var/www/html/app-mode.json
@@ -85,5 +83,12 @@ a2enmod rewrite
 
 # Stop apache first if is still running from the last time the container was run
 service apache2 stop
+
+# apache2.pid can hang around from previous dirty exits
+# (https://github.com/kwk/docker-registry-frontend/issues/159)
+if [ -f /var/run/apache2/apache2.pid ]
+then
+  rm /var/run/apache2/apache2.pid
+fi
 
 /usr/sbin/apache2ctl -D FOREGROUND ${useSsl}
